@@ -1,12 +1,23 @@
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * Implementation of a Node used in a B Tree
+ * @param <T> Generic type for the datatype item held my the BNode,
+ *            requires Comparable interface for comparison of items.
+ */
 public class BNode<T extends Comparable<? super T>> extends Node<T> implements Comparable<BNode<T>> {
-    // minimum degree
+    /**
+     * minimum degree (minimum number of children)
+     */
     private int t;
-    // current number of nodes
+    /**
+     * current number of nodes
+     */
     private int n;
-    // boolean keeping track of whether this is a leaf node
+    /**
+     * boolean keeping track of whether this is a leaf node
+     */
     private boolean leaf = true;
 
     // constructors
@@ -20,7 +31,11 @@ public class BNode<T extends Comparable<? super T>> extends Node<T> implements C
         this.t = n.t;
     }
 
-    // function to search for child in subtree rooted at this node
+    /**
+     * function to search for child in subtree rooted at this node
+     * @param item the item to be searched in the subtree
+     * @return the node at which the item resides
+     */
     public BNode<T> search(T item){
         int i;
         for (i = 0; i < neighbours.length; i++){
@@ -42,12 +57,19 @@ public class BNode<T extends Comparable<? super T>> extends Node<T> implements C
         }
     }
 
-    // print method to visualise nodes and all their children
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(50);
         print(buffer, "", "");
         return buffer.toString();
     }
+
+    /**
+     * Auxiliary method used to help provide a string representation.
+     * @param buffer the StringBuilder buffer to be used
+     * @param prefix prefix
+     * @param childrenPrefix children prefix
+     */
     private void print(StringBuilder buffer, String prefix, String childrenPrefix) {
         buffer.append(prefix);
         buffer.append(super.getItem());
