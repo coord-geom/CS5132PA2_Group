@@ -1,5 +1,6 @@
+package model;
+
 import java.util.Arrays;
-import java.util.Collections;
 
 public class BNode<T> extends Node<T>{
 
@@ -18,6 +19,10 @@ public class BNode<T> extends Node<T>{
         super(null, numNeighbours);
         keys = new int[numNeighbours-1];
         items = (T[]) new Object[numNeighbours-1];
+    }
+
+    public T[] getItems() {
+        return items;
     }
 
     public int binarySearch(int key){

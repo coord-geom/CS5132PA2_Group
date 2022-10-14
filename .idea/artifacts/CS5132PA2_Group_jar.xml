@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CS5132PA2_Group:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CS5132PA2_Group_jar</output-path>
+    <root id="archive" name="CS5132PA2_Group.jar">
+      <element id="module-output" name="CS5132PA2_Group" />
+    </root>
+  </artifact>
+</component>
