@@ -1,94 +1,68 @@
-import java.util.Arrays;
-import java.util.Iterator;
+public class BNode<T> extends Node<T>{
 
-/**
- * Implementation of a Node used in a B Tree
- * @param <T> Generic type for the datatype item held my the BNode,
- *            requires Comparable interface for comparison of items.
- */
-public class BNode<T extends Comparable<? super T>> extends Node<T> implements Comparable<BNode<T>> {
     /**
-     * minimum degree (minimum number of children)
+     * Implementation is taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
+     * Google is the best
      */
-    private int t;
-    /**
-     * current number of nodes
-     */
-    private int n;
-    /**
-     * boolean keeping track of whether this is a leaf node
-     */
-    private boolean leaf = true;
 
-    // constructors
-    public BNode(T item, int t) {
-        super(item, 2 * t - 1);
-        this.n = 0;
+    int numKeys = 0;
+    int[] keys;
+    T[] items;
+    boolean isLeaf;
+    // neighbours is childNodes;
+
+    public BNode(int numNeighbours) {
+        super(null, numNeighbours);
+        keys = new int[numNeighbours-1];
+        items = (T[]) new Object[numNeighbours-1];
     }
 
-    public BNode(BNode<T> n) {
-        this(n.getItem(), n.t);
-        this.t = n.t;
-    }
-
-    /**
-     * function to search for child in subtree rooted at this node
-     * @param item the item to be searched in the subtree
-     * @return the node at which the item resides
-     */
-    public BNode<T> search(T item){
-        int i;
-        for (i = 0; i < neighbours.length; i++){
-            int comp = item.compareTo(neighbours[i].getItem());
-            if (comp < 0){
-                // find the first child greater than item
-                break;
-            } else if (comp == 0){
-                // found the matching node
-                return (BNode<T>) neighbours[i];
-            }
+    public int binarySearch(int key){
+        int left = 0, right = numKeys - 1;
+        while(left < right){
+            int mid = left + (right-left)/2;
+            if(keys[mid] < key) left = mid+1;
+            else if(keys[mid] > key) right = mid-1;
+            else return mid;
         }
-        if (this.leaf){
-            // leaf nodes have no children, itself is not the item -> item does not exist in tree
-            return null;
-        } else {
-            // recurse into subtree with root being first child that was greater than item
-            return ((BNode<T>) neighbours[i]).search(item);
-        }
+        return -1;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder(50);
-        print(buffer, "", "");
-        return buffer.toString();
-    }
+    public boolean containsKey(int key){ return binarySearch(key) != 1; }
 
-    /**
-     * Auxiliary method used to help provide a string representation.
-     * @param buffer the StringBuilder buffer to be used
-     * @param prefix prefix
-     * @param childrenPrefix children prefix
-     */
-    private void print(StringBuilder buffer, String prefix, String childrenPrefix) {
-        buffer.append(prefix);
-        buffer.append(super.getItem());
-        buffer.append('\n');
-
-        for (Iterator<Node<T>> it = Arrays.stream(neighbours).iterator(); it.hasNext();){
-            BNode<T> node = (BNode<T>) it.next();
-            if (node != null){
-                if (it.hasNext()){
-                    node.print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
-                } else {
-                    node.print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
+    public void remove(int id, int shift){ // left is 0, right is 1
+        if(id >= 0){
+            int i;
+            for(i=id;i<numKeys;++i){
+                keys[i] = keys[i+1];
+                items[i] = items[i+1];
+                if(!isLeaf){
+                    if(i >= id+shift) neighbours[i] = neighbours[i+1];
                 }
             }
+            keys[i] = 0;
+            if(!isLeaf){
+                if(i>=id+shift) neighbours[i] = neighbours[i+1];
+                neighbours[i+1] = null;
+            }
+            numKeys--;
         }
     }
 
-    @Override
-    public int compareTo(BNode<T> o) {
-        return this.getItem().compareTo(o.getItem());
+    public void shiftRight(){
+        if(!isLeaf) neighbours[numKeys+1] = neighbours[numKeys];
+        for(int i=numKeys-1;i>=0;--i){
+            keys[i+1]=keys[i];
+            items[i+1]=items[i];
+            if(!isLeaf) neighbours[i+1]=neighbours[i];
+        }
     }
+
+    public int subtreeRootNodeIndex(int key){
+        for(int i=0;i<numKeys;++i){
+            if(key < keys[i]) return i;
+        }
+        return numKeys;
+    }
+
 }
