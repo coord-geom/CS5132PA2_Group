@@ -30,13 +30,13 @@ public class BTree<T> {
                 root=new BNode<>(2*order);
                 root.isLeaf=false;
                 root.neighbours[0]=root_;
-                split(root,0,root_);
+                splitNodes(root,0,root_);
                 insertNode(root,key,item);
             } else insertNode(root_,key,item);
         }
     }
 
-    private void split(BNode<T> parent, int i, BNode<T> child){
+    private void splitNodes(BNode<T> parent, int i, BNode<T> child){
         BNode<T> newNode = new BNode<>(2*order);
         newNode.isLeaf = child.isLeaf;
         newNode.numKeys = order-1;
@@ -82,7 +82,7 @@ public class BTree<T> {
             while(i>=0 && key<node.keys[i]) i--;
             ++i;
             if(((BNode) node.neighbours[i]).numKeys == 2*order-1){
-                split(node,i,(BNode) node.neighbours[i]);
+                splitNodes(node,i,(BNode) node.neighbours[i]);
                 if(key>node.keys[i]) ++i;
             }
             insertNode((BNode) node.neighbours[i],key,item);
@@ -179,6 +179,7 @@ public class BTree<T> {
             }
             medianId=source.numKeys;
             target.keys[medianId] = 0;
+            target.items[medianId] = null;
             for(int i=0;i<source.numKeys;++i){
                 target.keys[i]=source.keys[i];
                 target.items[i]=source.items[i];
