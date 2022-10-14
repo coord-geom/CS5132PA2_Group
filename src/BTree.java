@@ -41,7 +41,7 @@ public class BTree<T> {
         }
         if(!newNode.isLeaf){
             for(int j=0;j<order;++j) newNode.neighbours[j]=child.neighbours[j+order];
-            for(int j=order;j<child.numKeys;++j) child.neighbours[j]=null;
+            for(int j=order;j<=child.numKeys;++j) child.neighbours[j]=null;
         }
         for(int j=order;j<child.numKeys;++j){
             child.keys[j]=0;
@@ -80,6 +80,7 @@ public class BTree<T> {
                 split(node,i,(BNode) node.neighbours[i]);
                 if(key>node.keys[i]) ++i;
             }
+            insertNode((BNode) node.neighbours[i],key,item);
         }
     }
 
@@ -211,7 +212,7 @@ public class BTree<T> {
     public T search(BNode<T> node, int key){
         int i=0;
         while(i<node.numKeys && key>node.keys[i]) i++;
-        if(i<node.numKeys && key==node.keys[i]) return node.neighbours[i].getItem();
+        if(i<node.numKeys && key==node.keys[i]) return (T) node.neighbours[i].getItem();
         if(node.isLeaf) return null;
         return (T) search((BNode) node.neighbours[i],key);
     }
@@ -252,22 +253,23 @@ public class BTree<T> {
     }
 
     private String printTree(BNode<T> node){
-        String string = "";
+        StringBuilder string = new StringBuilder();
         if(node!=null){
             if(node.isLeaf){
-                for(int i=0;i<node.numKeys;++i) string += node.items[i] + ", ";
+                for(int i=0;i<node.numKeys;++i) string.append(node.items[i]).append(" ");
             } else {
                 int i;
                 for(i=0;i<node.numKeys;++i){
-                    string += printTree((BNode<T>) node.neighbours[i]);
-                    string += node.items[i] + ", ";
+                    string.append(printTree((BNode<T>) node.neighbours[i]));
+                    string.append(node.items[i]).append(" ");
                 }
-                string += printTree((BNode<T>) node.neighbours[i]);
+                string.append(printTree((BNode<T>) node.neighbours[i]));
             }
         }
-        return string;
+        return string.toString();
     }
     public String toString(){
-        return printTree(root);
+        // return printTree(root);
+        return root.toString();
     }
 }

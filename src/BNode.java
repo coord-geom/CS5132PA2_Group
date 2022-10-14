@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.Collections;
+
 public class BNode<T> extends Node<T>{
 
     /**
@@ -63,6 +66,27 @@ public class BNode<T> extends Node<T>{
             if(key < keys[i]) return i;
         }
         return numKeys;
+    }
+
+    public String toString() {
+        StringBuilder buffer = new StringBuilder(50);
+        print(buffer, "", "");
+        return buffer.toString();
+    }
+    private void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(Arrays.asList(items));
+        buffer.append('\n');
+
+        for (Node node: neighbours){
+            if (node != null){
+                if (node != neighbours[numKeys-1]){
+                    ((BNode<?>) node).print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
+                } else {
+                    ((BNode<?>) node).print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
+                }
+            }
+        }
     }
 
 }

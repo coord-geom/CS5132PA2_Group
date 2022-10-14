@@ -1,6 +1,6 @@
 public class Node<T> {
     private T item;
-    Node<T>[] neighbours; //Package accessibility
+    Node[] neighbours; //Package accessibility
 
     // Constructor to create Node containing item of generic class T
     public Node(T item){ this.item = item; }
