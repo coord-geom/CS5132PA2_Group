@@ -21,6 +21,10 @@ public class BNode<T> extends Node<T>{
         items = (T[]) new Object[numNeighbours-1];
     }
 
+    public T[] getItems() {
+        return items;
+    }
+
     public int binarySearch(int key){
         int left = 0, right = numKeys - 1;
         while(left < right){

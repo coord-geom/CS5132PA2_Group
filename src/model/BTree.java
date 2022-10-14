@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * Implementation of a B Tree
  * Utilises the model.BNode class
  */
-
 public class BTree<T> {
 
     private BNode<T> root = null;
@@ -18,6 +17,10 @@ public class BTree<T> {
         this.order = order;
         root = new BNode<>(2*order);
         root.isLeaf = true;
+    }
+
+    public BNode<T> getRootNode() {
+        return this.root;
     }
 
     public void add(int key, T item){
