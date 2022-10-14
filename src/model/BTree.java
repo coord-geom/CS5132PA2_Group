@@ -1,8 +1,10 @@
+package model;
+
 import java.util.ArrayList;
 
 /**
  * Implementation of a B Tree
- * Utilises the BNode class
+ * Utilises the model.BNode class
  */
 
 public class BTree<T> {

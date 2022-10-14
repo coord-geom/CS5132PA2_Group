@@ -1,3 +1,5 @@
+package model;
+
 //TODO make actual content
 public class BNodeTester {
     public static void main(String[] args) {
