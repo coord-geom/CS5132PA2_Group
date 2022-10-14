@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class BTree<T> {
 
     private BNode<T> root = null;
-    private static final int SHIFT_LEFT = 0;
-    private static final int SHIFT_RIGHT = 1;
+    private static final int LEFT_NODE = 0;
+    private static final int RIGHT_NODE = 1;
     private int order = 2;
 
     public BTree(int order){
@@ -91,7 +91,7 @@ public class BTree<T> {
     private void delete(BNode<T> node, int key){
         int i=node.binarySearch(key);
         if(node.isLeaf){
-            if(i!=-1) node.remove(i,SHIFT_LEFT);
+            if(i!=-1) node.remove(i,LEFT_NODE);
         } else {
             if(i!=-1){
                 BNode<T> left = (BNode<T>) node.neighbours[i];
@@ -118,7 +118,7 @@ public class BTree<T> {
                     delete(toDelete,node.keys[i]);
                 } else {
                     int medianId = mergeNodes(left,right);
-                    moveKey(node,i,SHIFT_RIGHT,left,medianId);
+                    moveKey(node,i,RIGHT_NODE,left,medianId);
                     delete(left,key);
                 }
             } else {
@@ -136,7 +136,7 @@ public class BTree<T> {
 
                         node.keys[i-1]=childLeft.keys[childLeft.numKeys-1];
                         node.items[i-1]=childLeft.items[childLeft.numKeys-1];
-                        childLeft.remove(childLeft.numKeys-1,SHIFT_RIGHT);
+                        childLeft.remove(childLeft.numKeys-1,RIGHT_NODE);
                     } else if(childRight!=null && childRight.numKeys>=order){
                         child.keys[childRight.numKeys]=node.keys[i];
                         child.items[childRight.numKeys]=node.items[i];
@@ -145,14 +145,14 @@ public class BTree<T> {
 
                         node.keys[i]=childRight.keys[0];
                         node.items[i]=childRight.items[0];
-                        childRight.remove(0,SHIFT_LEFT);
+                        childRight.remove(0,LEFT_NODE);
                     } else {
                         if(childLeft!=null){
                             int medianId=mergeNodes(child,childLeft);
-                            moveKey(node,i-1,SHIFT_LEFT,child,medianId);
+                            moveKey(node,i-1,LEFT_NODE,child,medianId);
                         } else if(childRight!=null){
                             int medianId=mergeNodes(child,childRight);
-                            moveKey(node,i,SHIFT_RIGHT,child,medianId);
+                            moveKey(node,i,RIGHT_NODE,child,medianId);
                         }
                     }
                 }
@@ -222,7 +222,7 @@ public class BTree<T> {
             int i=0;
             while(i<node.numKeys && key>node.keys[i]) i++;
             if(i<node.numKeys && key==node.keys[i]){
-                node.neighbours[i].setItem(item);
+                node.items[i] = item;
                 return true;
             }
             if(node.isLeaf) return false;
