@@ -14,18 +14,13 @@ public class Application {
     public Application() {
         JFrame rootFrame = new JFrame();
         BTree_<Integer> tree = new BTree_<>(3);
-        tree.add(3);
-        tree.add(6);
-        tree.add(7);
-        tree.add(2);
-        tree.add(60);
-        tree.add(24);
-        tree.add(66);
+        for (int i = 0; i < 100; i++) {
+            tree.add(i);
+        }
         System.out.println(tree.getHeight());
         System.out.println("In Application:");
         System.out.println(tree);
         BTreeDisplay display = new BTreeDisplay(new IntegerTreeItemFactory(), tree);
-        display.setOffset(100, 100);
         rootFrame.add(display);
 
         TextField textField = new TextField();

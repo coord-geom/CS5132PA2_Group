@@ -48,6 +48,7 @@ public class BTreeDisplay extends Canvas {
      * @param xAmount the x amount offset
      * @param yAmount the y amount affset
      */
+    @Deprecated
     public void setOffset(double xAmount, double yAmount) {
         this.treeGraphics.setXOffset(xAmount);
         this.treeGraphics.setYOffset(yAmount);
@@ -58,6 +59,7 @@ public class BTreeDisplay extends Canvas {
      * @param xAmount the x amount changed
      * @param yAmount the y amount changed
      */
+    @Deprecated
     public void changeOffset(double xAmount, double yAmount) {
         this.treeGraphics.setXOffset(this.treeGraphics.getXOffset() + xAmount);
         this.treeGraphics.setYOffset(this.treeGraphics.getYOffset() + yAmount);
@@ -89,6 +91,9 @@ public class BTreeDisplay extends Canvas {
 
     @Override
     public void paint(Graphics graphics) {
+        Graphics2D graphics2D = (Graphics2D) graphics;
+        graphics2D.translate(100, 100);
+        graphics2D.scale(0.4, 0.4);
         setBackground(Color.WHITE);
         treeGraphics.draw(graphics);
     }
