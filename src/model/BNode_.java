@@ -25,6 +25,7 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
 
     /**
      * Returns the array of items contained in the node.
+     * May contain null elements.
      *
      * @return an array of generic type items
      */
@@ -44,11 +45,12 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
 
     /**
      * Returns the child nodes of the B Node.
+     * May contain null elements.
      *
      * @return a Node array of children.
      */
-    public BNode_<?>[] getNeighbours() {
-        return (BNode_<?>[]) neighbours;
+    public Node[] getNeighbours() {
+        return this.neighbours;
     }
 
     public int binarySearch(T item) {

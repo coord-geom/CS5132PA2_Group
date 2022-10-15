@@ -1,5 +1,6 @@
 package graphics;
 
+import model.BNode;
 import model.BNode_;
 import model.BTree_;
 import model.Node;
@@ -85,8 +86,10 @@ public record BTreeGraphics(BTree_<?> tree) {
 
             // If the node is not a leaf, add more iterable child nodes and relevant data
             if (!currNode.isLeaf()) {
-                for (BNode_<?> node: currNode.getNeighbours()) {
-                    nodesIterationStack.add(node);
+                for (Node<?> node: currNode.getNeighbours()) {
+                    if (node == null)
+                        break;
+                    nodesIterationStack.add((BNode_<?>) node);
                     levelsIterationStack.add(currLevel);
                     parentsIterationStack.add(currIndex);
                 }
