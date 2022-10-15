@@ -6,9 +6,11 @@ import model.BTree_;
 public class BTree_Tester {
     public static void main(String[] args) {
         System.out.println("Basic Insertion Test");
-        testBasicInsertion();
+        BTree_<Character> tree = testBasicInsertion();
+        System.out.println(tree);
+        System.out.println(tree.getHeight()); // should be 1
     }
-    public static boolean testBasicInsertion() {
+    public static BTree_<Character> testBasicInsertion() {
         BTree_<Character> tree = new BTree_<>(3);
         tree.add('A');
         tree.add('R');
@@ -19,9 +21,6 @@ public class BTree_Tester {
         tree.add('G');
         tree.add('I');
         tree.add('M');
-        // tree.add(0, -78);
-        // tree.add(10, 2);
-        System.out.println(tree);
-        return true;
+        return tree;
     }
 }

@@ -51,8 +51,8 @@ public record BTreeGraphics(BTree_<?> tree) {
             levelsNodes.add(new ArrayList<>());
 
         // List to record down parent indices (index of the list on the level above the child node) of level order nodes
-        ArrayList<ArrayList<Integer>> levelsParent = new ArrayList<>(height - 1);
-        for (int i = 0; i < height - 1; i++)
+        ArrayList<ArrayList<Integer>> levelsParent = new ArrayList<>(height);
+        for (int i = 0; i < height; i++)
             levelsParent.add(new ArrayList<>());
 
         // Stack to keep track of next nodes to iterate.

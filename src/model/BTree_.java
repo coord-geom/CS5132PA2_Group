@@ -60,8 +60,9 @@ public class BTree_<T extends Comparable<? super T>> {
         int height = 0;
         // Iterates down the tree until a leaf node is reached.
         // Property of B Trees ensures the first child node always exists given a node is not a root.
-        while (!root.isLeaf()) {
-            root = (BNode_<T>) root.neighbours[0];
+        BNode_<T> iteratingNode = node;
+        while (!iteratingNode.isLeaf()) {
+            iteratingNode = (BNode_<T>) iteratingNode.neighbours[0];
             height++;
         }
         return height;

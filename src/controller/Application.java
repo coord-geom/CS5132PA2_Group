@@ -21,6 +21,8 @@ public class Application {
         tree.add(60);
         tree.add(24);
         tree.add(66);
+        System.out.println(tree.getHeight());
+        System.out.println("In Application:");
         System.out.println(tree);
         BTreeDisplay display = new BTreeDisplay(new IntegerTreeItemFactory(), tree);
         rootFrame.add(display);
