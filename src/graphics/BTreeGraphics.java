@@ -26,12 +26,24 @@ public class BTreeGraphics {
     private final BTree_<?> tree;
 
     /**
+     * Stores the graphics node objects
+     */
+    private ArrayList<NodeGraphics> nodeGraphics;
+
+    /**
+     * Boolean to track whether an update has been made to the tree.
+     */
+    private boolean hasUpdate;
+
+    /**
      * Constructor with tree input.
      *
      * @param tree the B Tree.
      */
     public BTreeGraphics(BTree_<?> tree) {
         this.tree = tree;
+        this.nodeGraphics = new ArrayList<>();
+        this.hasUpdate = true;
     }
 
     /**
@@ -44,13 +56,19 @@ public class BTreeGraphics {
     }
 
     /**
-     * Returns an ArrayList of NodeGraphics objects,
+     * Must be called when an update is made to the tree to update the NodeGraphics ArrayList.
+     */
+    public void update() {
+        hasUpdate = true;
+    }
+
+    /**
+     * Updates the ArrayList of NodeGraphics objects,
      * each with a draw() method that allows the whole tree to be displayed
      *
      * @param graphics the graphics instance needed to calculate values
-     * @return an ArrayList of NodeGraphics objects.
      */
-    private ArrayList<NodeGraphics> getNodeGraphics(Graphics graphics) {
+    private void updateNodeGraphics(Graphics graphics) {
         // Step 1:
         // Iterate level-order through the tree using breadth-first iteration
         // Tracks down nodes as well as their children.
@@ -111,7 +129,7 @@ public class BTreeGraphics {
         // Turning data into graphics classes
 
         // Records into a single list
-        ArrayList<NodeGraphics> nodeGraphics = new ArrayList<>();
+        nodeGraphics = new ArrayList<>();
 
         // Records into level separated lists for easy retrieval of parent nodes.
         ArrayList<ArrayList<NodeGraphics>> levelsNodeGraphics = new ArrayList<>(height + 1);
@@ -180,8 +198,6 @@ public class BTreeGraphics {
                 xOffset += nodeGraphicsAtLevel.getWidth() + NodeGraphics.PADDING * 2 + SPACING_WITHIN_LEVELS;
             }
         }
-
-        return nodeGraphics;
     }
 
     /**
@@ -190,7 +206,10 @@ public class BTreeGraphics {
      * @param graphics the graphics instance
      */
     void draw(Graphics graphics) {
-        ArrayList<NodeGraphics> nodeGraphics = getNodeGraphics(graphics);
+        if (hasUpdate) {
+            updateNodeGraphics(graphics);
+            hasUpdate = false;
+        }
         // Draw node body
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawBody(graphics);
@@ -198,8 +217,6 @@ public class BTreeGraphics {
         // as it requires the positional coordinate data of the child nodes to be initialised first
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawChildConnections(graphics);
-
-        //
     }
     /**
      * A class representing the nodes of the B Tree to be drawn.
