@@ -33,6 +33,16 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
     }
 
     /**
+     * Getter for boolean value stating if the node is a leaf node or not.
+     *
+     * @return whether the node is a leaf node.
+     */
+    public boolean isLeaf() {
+        return isLeaf;
+    }
+
+
+    /**
      * Returns the child nodes of the B Node.
      *
      * @return a Node array of children.
@@ -69,12 +79,12 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
             int i;
             for (i = id; i < numItems; ++i) {
                 items[i] = items[i + 1];
-                if (!isLeaf) {
+                if (!isLeaf()) {
                     if (i >= id + shift) neighbours[i] = neighbours[i + 1];
                 }
             }
             items[i] = null;
-            if (!isLeaf) {
+            if (!isLeaf()) {
                 if (i >= id + shift) neighbours[i] = neighbours[i + 1];
                 neighbours[i + 1] = null;
             }
@@ -83,10 +93,10 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
     }
 
     public void shiftRight() {
-        if (!isLeaf) neighbours[numItems + 1] = neighbours[numItems];
+        if (!isLeaf()) neighbours[numItems + 1] = neighbours[numItems];
         for (int i = numItems - 1; i >= 0; --i) {
             items[i + 1] = items[i];
-            if (!isLeaf) neighbours[i + 1] = neighbours[i];
+            if (!isLeaf()) neighbours[i + 1] = neighbours[i];
         }
     }
 
@@ -127,5 +137,4 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
             }
         }
     }
-
 }

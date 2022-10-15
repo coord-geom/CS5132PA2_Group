@@ -2,6 +2,7 @@ package graphics;
 
 import model.BNode_;
 import model.BTree_;
+import model.Node;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -37,20 +38,93 @@ public record BTreeGraphics(BTree_<?> tree) {
      *
      * @return an ArrayList of NodeGraphics objects.
      */
-    //TODO
     private ArrayList<NodeGraphics> getNodeGraphics() {
-        ArrayList<ArrayList<NodeGraphics>> nodeGraphicsLevels = new ArrayList<>();
+        // Step 1:
+        // Iterate level-order through the tree using breadth-first iteration
+        // Tracks down nodes as well as their children.
 
-        return new ArrayList<>();
-    }
+        int height = tree().getHeight();
 
-    /**
-     * Iterate level-order through the tree
-     * @param nodeGraphicsLevels the given list of levels and nodes.
-     */
-    //TODO
-    private void getLevelOrderNodes(ArrayList<ArrayList<NodeGraphics>> nodeGraphicsLevels) {
+        // List to record down level order nodes
+        ArrayList<ArrayList<BNode_<?>>> levelsNodes = new ArrayList<>(height);
+        for (int i = 0; i < height; i++)
+            levelsNodes.add(new ArrayList<>());
 
+        // List to record down parent indices (index of the list on the level above the child node) of level order nodes
+        ArrayList<ArrayList<Integer>> levelsParent = new ArrayList<>(height - 1);
+        for (int i = 0; i < height - 1; i++)
+            levelsParent.add(new ArrayList<>());
+
+        // Stack to keep track of next nodes to iterate.
+        ArrayList<BNode_<?>> nodesIterationStack = new ArrayList<>();
+        // Stack to keep track of the levels of the nodes in the iteration stack.
+        ArrayList<Integer> levelsIterationStack = new ArrayList<>();
+        // Stack to keep track of the indices of the parents of the nodes in the iteration stack.
+        ArrayList<Integer> parentsIterationStack = new ArrayList<>();
+        // Start from root
+        nodesIterationStack.add(tree().getRootNode());
+        levelsIterationStack.add(0);
+        parentsIterationStack.add(-1);
+
+        BNode_<?> currNode;
+        int currLevel;
+        int currParentIndex;
+        int currIndex;
+        // Conduct iteration
+        while (!nodesIterationStack.isEmpty()) {
+            // Get data of current node
+            currNode = nodesIterationStack.remove(0);
+            currLevel = levelsIterationStack.remove(0);
+            currParentIndex = parentsIterationStack.remove(0);
+
+            // Add data to the recording lists
+            currIndex = levelsNodes.get(currLevel).size() - 1;
+            if (currLevel != 0)
+                levelsParent.get(currLevel - 1).add(currParentIndex);
+            levelsNodes.get(currLevel).add(currNode);
+
+            // If the node is not a leaf, add more iterable child nodes and relevant data
+            if (!currNode.isLeaf()) {
+                for (BNode_<?> node: currNode.getNeighbours()) {
+                    nodesIterationStack.add(node);
+                    levelsIterationStack.add(currLevel);
+                    parentsIterationStack.add(currIndex);
+                }
+            }
+        }
+
+        // Step 2:
+        // Turning data into graphics classes
+
+        // Records into a single list
+        ArrayList<NodeGraphics> nodeGraphics = new ArrayList<>();
+
+        // Records into level separated lists for easy retrieval of parent nodes.
+        ArrayList<ArrayList<NodeGraphics>> levelsNodeGraphics = new ArrayList<>();
+        for (int i = 0; i < height; i++)
+            levelsNodeGraphics.add(new ArrayList<>());
+
+        // Iterate through all nodes and create node graphics
+        NodeGraphics parentNode;
+        NodeGraphics newNodeGraphics;
+        for (int level = 0; level < height; level++) {
+            int x = 0;  //TODO
+            for (int i = 0; i < levelsNodes.get(level).size(); i++) {
+                // Adding parent NodeGraphic objects to current node classes is possible
+                // as the recording lists maintain the property that the parent nodes are always before child nodes
+                // due to the breadth-first iteration.
+                if (level != 0)
+                    parentNode = levelsNodeGraphics.get(level - 1).get(levelsParent.get(level).get(i));
+                else
+                    parentNode = null;
+                newNodeGraphics = new NodeGraphics(x, level * 100, levelsNodes.get(level).get(i), parentNode);
+                levelsNodeGraphics.get(level).add(newNodeGraphics);
+                nodeGraphics.add(newNodeGraphics);
+                x += 300;
+            }
+        }
+
+        return nodeGraphics;
     }
 
     /**
@@ -84,8 +158,9 @@ public record BTreeGraphics(BTree_<?> tree) {
 
         /**
          * The item representation of the items inside the Node
+         * Will not contain any null values
          */
-        private final String[] items;
+        private String[] items;
 
         /**
          * Position of the graphic, located at the top left of the bounding box.
@@ -103,7 +178,7 @@ public record BTreeGraphics(BTree_<?> tree) {
         /**
          * The children of the node.
          */
-        private NodeGraphics[] children;
+        private NodeGraphics parent;
 
         /**
          * Constructor
@@ -111,10 +186,10 @@ public record BTreeGraphics(BTree_<?> tree) {
          * @param posX              the x position of the graphic
          * @param posY              the y position of the graphic
          * @param node              the node of the B Tree with relevant data
-         * @param childNodeGraphics the child nodes
+         * @param parentNodeGraphic the parent node, null if does not exist
          */
-        NodeGraphics(double posX, double posY, BNode_<?> node, NodeGraphics[] childNodeGraphics) {
-            this.items = new String[node.getItems().length];
+        NodeGraphics(double posX, double posY, BNode_<?> node, NodeGraphics parentNodeGraphic) {
+            this.items = null;
             initialiseItems(node);
 
             this.coords = new double[2];
@@ -123,7 +198,7 @@ public record BTreeGraphics(BTree_<?> tree) {
 
             this.dimensions = new double[]{0, 0};
 
-            this.children = childNodeGraphics;
+            this.parent = parentNodeGraphic;
         }
 
         /**
@@ -248,7 +323,18 @@ public record BTreeGraphics(BTree_<?> tree) {
          */
         private void initialiseItems(BNode_<?> node) {
             Object[] items = node.getItems();
-            for (int i = 0; i < items.length; i++) {
+            // Find the number of non-null values
+            int numNonNull = 0;
+            // Since null values are always towards the end of the array, we iterate until we find a null value
+            for (Object item: items) {
+                if (item == null)
+                    break;
+                numNonNull += 1;
+            }
+
+            // Initialise items with number of non-null values, and populate with string data
+            this.items = new String[numNonNull];
+            for (int i = 0; i < numNonNull; i++) {
                 this.items[i] = items[i].toString();
             }
         }

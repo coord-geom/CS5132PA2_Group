@@ -60,7 +60,7 @@ public class BTree_<T extends Comparable<? super T>> {
         int height = 0;
         // Iterates down the tree until a leaf node is reached.
         // Property of B Trees ensures the first child node always exists given a node is not a root.
-        while (!root.isLeaf) {
+        while (!root.isLeaf()) {
             root = (BNode_<T>) root.neighbours[0];
             height++;
         }
@@ -103,7 +103,7 @@ public class BTree_<T extends Comparable<? super T>> {
             newNode.items[j] = child.items[j + minChildren];
 
         // If the split nodes are inner nodes, copy over children as well.
-        if (!newNode.isLeaf) {
+        if (!newNode.isLeaf()) {
             // -> [,a,b,c,d,e,] & [,d,e,]
             for (int j = 0; j < minChildren; ++j)
                 newNode.neighbours[j] = child.neighbours[j + minChildren];
@@ -145,7 +145,7 @@ public class BTree_<T extends Comparable<? super T>> {
     private void insertNode(BNode_<T> node, T item) {
         int i = node.numItems - 1;
         //
-        if (node.isLeaf) {
+        if (node.isLeaf()) {
             while (i >= 0 && item.compareTo(node.items[i]) < 0) {
                 node.items[i + 1] = node.items[i];
                 i--;
@@ -170,7 +170,7 @@ public class BTree_<T extends Comparable<? super T>> {
 
     private void delete(BNode_<T> node, T item) {
         int i = node.binarySearch(item);
-        if (node.isLeaf) {
+        if (node.isLeaf()) {
             if (i != -1) node.remove(i, LEFT_NODE);
         } else {
             if (i != -1) {
@@ -179,7 +179,7 @@ public class BTree_<T extends Comparable<? super T>> {
                 if (left.numItems >= minChildren) {
                     BNode_<T> preNode = left;
                     BNode_<T> toDelete = preNode;
-                    while (!preNode.isLeaf) {
+                    while (!preNode.isLeaf()) {
                         toDelete = preNode;
                         preNode = (BNode_<T>) preNode.neighbours[node.numItems - 1];
                     }
@@ -188,7 +188,7 @@ public class BTree_<T extends Comparable<? super T>> {
                 } else if (right.numItems >= minChildren) {
                     BNode_<T> sucNode = right;
                     BNode_<T> toDelete = sucNode;
-                    while (!sucNode.isLeaf) {
+                    while (!sucNode.isLeaf()) {
                         toDelete = sucNode;
                         sucNode = (BNode_<T>) sucNode.neighbours[0];
                     }
@@ -208,14 +208,14 @@ public class BTree_<T extends Comparable<? super T>> {
                     if (childLeft != null && childLeft.numItems >= minChildren) {
                         child.shiftRight();
                         child.items[0] = node.items[i - 1];
-                        if (!child.isLeaf) child.neighbours[0] = node.neighbours[i - 1];
+                        if (!child.isLeaf()) child.neighbours[0] = node.neighbours[i - 1];
                         ++child.numItems;
 
                         node.items[i - 1] = childLeft.items[childLeft.numItems - 1];
                         childLeft.remove(childLeft.numItems - 1, RIGHT_NODE);
                     } else if (childRight != null && childRight.numItems >= minChildren) {
                         child.items[childRight.numItems] = node.items[i];
-                        if (!child.isLeaf) child.neighbours[childRight.numItems] = node.neighbours[i];
+                        if (!child.isLeaf()) child.neighbours[childRight.numItems] = node.neighbours[i];
                         ++child.numItems;
 
                         node.items[i] = childRight.items[0];
@@ -238,29 +238,29 @@ public class BTree_<T extends Comparable<? super T>> {
     private int mergeNodes(BNode_<T> target, BNode_<T> source) {
         int medianId;
         if (source.items[0].compareTo(target.items[target.numItems - 1]) < 0) {
-            if (!target.isLeaf)
+            if (!target.isLeaf())
                 target.neighbours[source.numItems + target.numItems + 1] = target.neighbours[target.numItems];
             for (int i = target.numItems; i > 0; --i) {
                 target.items[source.numItems + i] = target.items[i - 1];
-                if (!target.isLeaf)
+                if (!target.isLeaf())
                     target.neighbours[source.numItems + i] = target.neighbours[i - 1];
             }
             medianId = source.numItems;
             target.items[medianId] = null;
             for (int i = 0; i < source.numItems; ++i) {
                 target.items[i] = source.items[i];
-                if (!source.isLeaf) target.neighbours[i] = source.neighbours[i];
+                if (!source.isLeaf()) target.neighbours[i] = source.neighbours[i];
             }
-            if (!source.isLeaf) target.neighbours[source.numItems] = source.neighbours[source.numItems];
+            if (!source.isLeaf()) target.neighbours[source.numItems] = source.neighbours[source.numItems];
         } else {
             medianId = target.numItems;
             target.items[medianId] = null;
             int offset = medianId + 1;
             for (int i = 0; i < source.numItems; ++i) {
                 target.items[offset + i] = source.items[i];
-                if (!source.isLeaf) target.neighbours[offset + i] = source.neighbours[offset + i];
+                if (!source.isLeaf()) target.neighbours[offset + i] = source.neighbours[offset + i];
             }
-            if (!source.isLeaf) target.neighbours[offset + source.numItems] = source.neighbours[source.numItems];
+            if (!source.isLeaf()) target.neighbours[offset + source.numItems] = source.neighbours[source.numItems];
         }
         target.numItems += source.numItems;
         return medianId;
@@ -300,7 +300,7 @@ public class BTree_<T extends Comparable<? super T>> {
             return (T) node.neighbours[i].getItem();
 
         // Recurse down the tree, returns null if already at leaf node
-        if (node.isLeaf)
+        if (node.isLeaf())
             return null;
         return (T) search((BNode_) node.neighbours[i], item);
     }
@@ -313,7 +313,7 @@ public class BTree_<T extends Comparable<? super T>> {
                 node.items[i] = item;
                 return true;
             }
-            if (node.isLeaf)
+            if (node.isLeaf())
                 return false;
             node = (BNode_<T>) node.neighbours[i];
         }
