@@ -2,7 +2,6 @@ package model.tests;
 
 import model.BTree;
 
-//TODO make actual content
 public class BNodeTester {
     public static void main(String[] args) {
         BTree<Integer> btree = new BTree<>(4);
