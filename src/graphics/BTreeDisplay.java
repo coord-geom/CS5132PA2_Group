@@ -93,7 +93,7 @@ public class BTreeDisplay extends Canvas {
     public void paint(Graphics graphics) {
         Graphics2D graphics2D = (Graphics2D) graphics;
         graphics2D.translate(100, 100);
-        graphics2D.scale(0.4, 0.4);
+        graphics2D.scale(1, 1);
         setBackground(Color.WHITE);
         treeGraphics.draw(graphics);
     }

@@ -13,11 +13,18 @@ import java.awt.*;
 public class Application {
     public Application() {
         JFrame rootFrame = new JFrame();
-        BTree_<Integer> tree = new BTree_<>(3);
-        for (int i = 0; i < 100; i++) {
-            tree.add(i);
-        }
-        System.out.println(tree.getHeight());
+        BTree_<String> tree = new BTree_<>(3);
+//        BTree_<Integer> tree = new BTree_<>(3);
+//        for (int i = 0; i < 100; i++) {
+//            tree.add(i);
+//        }
+        tree.add("Donald Trump");
+        tree.add("Donald Duck");
+        tree.add("Joe Biden");
+        tree.add("Liz Truss");
+        tree.add("Lee Hsien Loong");
+        tree.add("Arnold Swarznegger");
+        tree.add("Bernard Ricardo");
         System.out.println("In Application:");
         System.out.println(tree);
         BTreeDisplay display = new BTreeDisplay(new IntegerTreeItemFactory(), tree);

@@ -328,6 +328,7 @@ public class BTreeGraphics {
          * @param graphics the graphics instance
          */
         void updateDimensionsAndBounds(Graphics graphics) {
+            graphics.setFont(FONT);
             itemBounds = BTreeDisplay.getStringBounds(items, graphics, SPACING + ITEM_PADDING * 2);
 
             // Update dimensions
