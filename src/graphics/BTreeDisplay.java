@@ -24,6 +24,19 @@ public class BTreeDisplay extends Canvas {
     private final TreeItemFactory<? extends Comparable<?>> treeItemFactory;
 
     /**
+     * The offset x amount for the display graphics
+     */
+    private double xOffset;
+    /**
+     * The offset y amount for the display graphics
+     */
+    private double yOffset;
+    /**
+     * The zoom scale amount for the display graphics
+     */
+    private double scale;
+
+    /**
      * Constructor with factory input.
      * @param treeItemFactory the factory used to create the empty tree and items
      */
@@ -44,25 +57,46 @@ public class BTreeDisplay extends Canvas {
     }
 
     /**
-     * Sets the offset of the tree graphics
-     * @param xAmount the x amount offset
-     * @param yAmount the y amount affset
+     * Getter for x offset
+     * @return the x offset
      */
-    @Deprecated
-    public void setOffset(double xAmount, double yAmount) {
-        this.treeGraphics.setXOffset(xAmount);
-        this.treeGraphics.setYOffset(yAmount);
+    public double getXOffset() {
+        return xOffset;
     }
-
     /**
-     * Changes the offset of the tree graphics by specified amounts
-     * @param xAmount the x amount changed
-     * @param yAmount the y amount changed
+     * Getter for y offset
+     * @return the y offset
      */
-    @Deprecated
-    public void changeOffset(double xAmount, double yAmount) {
-        this.treeGraphics.setXOffset(this.treeGraphics.getXOffset() + xAmount);
-        this.treeGraphics.setYOffset(this.treeGraphics.getYOffset() + yAmount);
+    public double getYOffset() {
+        return yOffset;
+    }
+    /**
+     * Getter for zoom scale
+     * @return the zoom scale
+     */
+    public double getScale() {
+        return scale;
+    }
+    /**
+     * Setter for x offset
+     * @param xOffset the new x offset
+     */
+    public void setXOffset(double xOffset) {
+        this.xOffset = xOffset;
+    }
+    /**
+     * Setter for y offset
+     * @param yOffset the new y offset
+     */
+    public void setYOffset(double yOffset) {
+        this.yOffset = yOffset;
+    }
+    /**
+     * Setter for zoom scale
+     * @param scale the new zoom scale
+     */
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 
     /**
@@ -92,10 +126,28 @@ public class BTreeDisplay extends Canvas {
     @Override
     public void paint(Graphics graphics) {
         Graphics2D graphics2D = (Graphics2D) graphics;
-        graphics2D.translate(100, 100);
-        graphics2D.scale(1, 1);
+        graphics2D.translate(getXOffset(), getYOffset());
+        graphics2D.scale(getScale(), getScale());
         setBackground(Color.WHITE);
         treeGraphics.draw(graphics);
+    }
+
+    /**
+     * Moves the display to offset the graphics
+     * @param xAmount change in the x direction
+     * @param yAmount change in the y direction
+     */
+    public void moveDisplay(double xAmount, double yAmount) {
+        setXOffset(getXOffset() + xAmount);
+        setYOffset(getYOffset() + yAmount);
+    }
+
+    /**
+     * Scales the zoom to change the display size of the graphics
+     * @param multiplier the multiplier to be applied to the scale
+     */
+    public void scaleDisplay(double multiplier) {
+        setScale(getScale() * multiplier);
     }
 
     /**
@@ -144,71 +196,15 @@ public class BTreeDisplay extends Canvas {
      * @param h the height of the rectangle without padding
      * @param padding the padding
      */
-    static void fillRectPadding(Graphics2D graphics, double x, double y, double w, double h, double padding) {
+    static void fillRoundRectPadding(Graphics2D graphics,
+                                     double x, double y, double w, double h, double arc, double padding) {
         graphics.fillRoundRect(
                 (int) (x - padding),
                 (int) (y - padding),
                 (int) (w + padding * 2),
                 (int) (h + padding * 2),
-                (int) padding,
-                (int) padding
+                (int) arc,
+                (int) arc
         );
-    }
-
-    /**
-     * Draws an item inside a node
-     * @param graphics the graphics instance
-     * @param posX the x position
-     * @param posY the y position
-     * @param item the item whose toString will be used for display
-     */
-    @Deprecated
-    private void drawItem(Graphics graphics, int posX, int posY, Object item) {
-        String text = item.toString();
-
-        graphics.setColor(Color.YELLOW);
-        Rectangle2D rect = getStringBounds(text, graphics);
-        graphics.fillRect(posX, posY, (int)rect.getWidth(), (int)rect.getHeight());
-
-        graphics.setColor(Color.BLACK);
-        graphics.drawString(text, posX, posY + (int)(rect.getHeight() * (3./4.)));
-    }
-
-    /**
-     * Draws a node of the B Tree.
-     * @param graphics the graphics instance
-     * @param posX the x position
-     * @param posY the y position
-     * @param node the node to be displayed
-     */
-    @Deprecated
-    private void drawNode(Graphics graphics, int posX, int posY, BNode_<?> node) {
-        Object[] items = node.getItems();
-        int gapSize = 5;
-        // Loop through once to get the width and height of the node.
-        int width = gapSize;
-        int maxHeight = 0;
-        for (Object item: items) {
-            if (item == null)
-                break;
-            Rectangle2D rect = getStringBounds(item.toString(), graphics);
-            width += rect.getWidth() + gapSize; // gapSize is added for the gap between the items
-            if (maxHeight < rect.getHeight())
-                maxHeight = (int) rect.getHeight();
-        }
-
-        // Draw the node
-        graphics.setColor(Color.ORANGE);
-        graphics.fillRect(posX, posY - gapSize, width, maxHeight + gapSize + gapSize);
-
-        // Loop through again to draw items
-        posX += gapSize;
-        for (Object item: items) {
-            if (item == null)
-                break;
-            drawItem(graphics, posX, posY, item);
-            Rectangle2D rect = getStringBounds(item.toString(), graphics);
-            posX += rect.getWidth() + gapSize;
-        }
     }
 }

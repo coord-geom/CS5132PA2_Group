@@ -16,7 +16,7 @@ import java.util.Collections;
 public class BTreeGraphics {
 
     // Default constant values and settings
-    private final static double SPACING_BETWEEN_LEVELS = 52;
+    private final static double SPACING_BETWEEN_LEVELS = 72;
 
     private final static double SPACING_WITHIN_LEVELS = 20;
 
@@ -24,17 +24,6 @@ public class BTreeGraphics {
      * The wrapped B Tree object
      */
     private final BTree_<?> tree;
-
-    /**
-     * The offset x amount for the display graphics
-     */
-    @Deprecated
-    private double xOffset;
-    /**
-     * The offset y amount for the display graphics
-     */
-    @Deprecated
-    private double yOffset;
 
     /**
      * Constructor with tree input.
@@ -52,39 +41,6 @@ public class BTreeGraphics {
      */
     public BTree_<?> getTree() {
         return tree;
-    }
-
-    /**
-     * Getter for x offset
-     * @return the x offset
-     */
-    @Deprecated
-    public double getXOffset() {
-        return xOffset;
-    }
-    /**
-     * Getter for y offset
-     * @return the y offset
-     */
-    @Deprecated
-    public double getYOffset() {
-        return yOffset;
-    }
-    /**
-     * Setter for x offset
-     * @param xOffset the new x offset
-     */
-    @Deprecated
-    public void setXOffset(double xOffset) {
-        this.xOffset = xOffset;
-    }
-    /**
-     * Setter for y offset
-     * @param yOffset the new y offset
-     */
-    @Deprecated
-    public void setYOffset(double yOffset) {
-        this.yOffset = yOffset;
     }
 
     /**
@@ -251,15 +207,18 @@ public class BTreeGraphics {
     static class NodeGraphics {
 
         // Default constant values and settings
-        private final static double SPACING = 4;  // Spacing between items excluding padding
-        private final static double PADDING = 8;  // Starts from the raw string bounding box
-        private final static double ITEM_PADDING = 4;  // Starts from the raw string bounding box
-        private final static Color BG_COLOR = Color.BLACK;
-        private final static Color ITEM_BG_COLOR = Color.BLUE;
-        private final static Color FONT_COLOR = Color.GREEN;
-        private final static Font FONT = new Font("Arial", Font.BOLD, 20);
-        private final static Stroke LINE_STROKE = new BasicStroke(3);
-        private final static Color LINE_COLOR = Color.BLACK;
+        private final static double PADDING = 12;  // Starts from the raw string bounding box
+        private final static double ARC = 50;
+        private final static double ITEM_PADDING = 8;  // Starts from the raw string bounding box
+
+        private final static double ITEM_ARC = 40;
+        private final static double SPACING = 16;  // Spacing between items excluding padding
+        private final static Color BG_COLOR = new Color(120, 130, 150);
+        private final static Color ITEM_BG_COLOR = new Color(20, 30, 60);
+        private final static Color FONT_COLOR = Color.WHITE;
+        private final static Font FONT = new Font("Verdana", Font.BOLD, 20);
+        private final static Stroke LINE_STROKE = new BasicStroke(2);
+        private final static Color LINE_COLOR = new Color(120, 130, 150);
 
         /**
          * The item representation of the items inside the Node
@@ -360,23 +319,25 @@ public class BTreeGraphics {
 
             // Draw Node
             graphics.setColor(BG_COLOR);
-            BTreeDisplay.fillRectPadding(
+            BTreeDisplay.fillRoundRectPadding(
                     graphics2D,
                     getPosX(),
                     getPosY(),
                     getWidth(),
                     getHeight(),
+                    ARC,
                     PADDING);
 
             // Draw items
             for (int i = 0; i < items.length; i++) {
                 graphics.setColor(ITEM_BG_COLOR);
-                BTreeDisplay.fillRectPadding(
+                BTreeDisplay.fillRoundRectPadding(
                         graphics2D,
                         itemBounds[i].getX() + getPosX(),
                         itemBounds[i].getY() + getPosY(),
                         itemBounds[i].getWidth(),
                         itemBounds[i].getHeight(),
+                        ITEM_ARC,
                         ITEM_PADDING);
 
                 graphics.setColor(FONT_COLOR);
