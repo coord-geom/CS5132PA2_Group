@@ -3,16 +3,25 @@ package model;
 import java.util.ArrayList;
 
 /**
- * Implementation of a B Tree
+ * Implementation of a B Tree, where a key-item pair data is stored.
+ * The key represents the item's "rank" and is used for comparing and sorting the data.
+ * The keys should be unique
+ * <br>
  * Utilises the model.BNode class
- * Taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
- * Google is best
+ * <br>
+ * <em>Taken and modified from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">here</a></em>
+ * <br>
+ * <em>Google is best</em>
  */
 public class BTree<T> {
 
+    /**
+     * The root node of the tree
+     */
     private BNode<T> root = null;
     private static final int LEFT_NODE = 0;
     private static final int RIGHT_NODE = 1;
+
     /**
      * The minimum number of children a node in the tree can have
      */
@@ -60,7 +69,6 @@ public class BTree<T> {
     //       |       ->      /   \
     // [,a,b,c,d,e,]    [,a,b,] [,d,e,]
     private void splitNodes(BNode<T> parent, int i, BNode<T> child) {
-
         // Create new child node
         // -> [,a,b,c,d,e,] & []
         BNode<T> newNode = new BNode<>(2 * minChildren);
@@ -114,9 +122,15 @@ public class BTree<T> {
         ++parent.numKeys;
     }
 
-
+    /**
+     * Inserts a key-item pair into a subtree given the subtree's root node
+     * @param node the subtree's root node
+     * @param key
+     * @param item
+     */
     private void insertNode(BNode<T> node, int key, T item) {
         int i = node.numKeys - 1;
+        //
         if (node.isLeaf) {
             while (i >= 0 && key < node.keys[i]) {
                 node.keys[i + 1] = node.keys[i];
