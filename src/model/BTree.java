@@ -324,40 +324,6 @@ public class BTree<T> {
         root = null;
     }
 
-    public ArrayList<Integer> getKeys(BNode<T> node) {
-        ArrayList<Integer> res = new ArrayList<>();
-        if (node != null) {
-            if (node.isLeaf) {
-                for (int i = 0; i < node.numKeys; ++i) res.add(node.numKeys);
-            } else {
-                int i;
-                for (i = 0; i < node.numKeys; ++i) {
-                    res.addAll(getKeys((BNode<T>) node.neighbours[i]));
-                    res.add(node.keys[i]);
-                }
-                res.addAll((getKeys((BNode<T>) node.neighbours[i])));
-            }
-        }
-        return res;
-    }
-
-    private String printTree(BNode<T> node) {
-        StringBuilder string = new StringBuilder();
-        if (node != null) {
-            if (node.isLeaf) {
-                for (int i = 0; i < node.numKeys; ++i) string.append(node.items[i]).append(" ");
-            } else {
-                int i;
-                for (i = 0; i < node.numKeys; ++i) {
-                    string.append(printTree((BNode<T>) node.neighbours[i]));
-                    string.append(node.items[i]).append(" ");
-                }
-                string.append(printTree((BNode<T>) node.neighbours[i]));
-            }
-        }
-        return string.toString();
-    }
-
     @Override
     public String toString() {
         // return printTree(root);
