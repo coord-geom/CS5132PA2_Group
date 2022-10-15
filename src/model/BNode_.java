@@ -79,7 +79,7 @@ public class BNode_<T extends Comparable<? super T>> extends Node<T> {
     public void remove(int id, int shift) { // left is 0, right is 1
         if (id >= 0) {
             int i;
-            for (i = id; i < numItems; ++i) {
+            for (i = id; i < numItems - 1; ++i) {
                 items[i] = items[i + 1];
                 if (!isLeaf()) {
                     if (i >= id + shift) neighbours[i] = neighbours[i + 1];

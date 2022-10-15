@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Implementation of a B Tree, where a key-item pair data is stored.
@@ -200,7 +201,7 @@ public class BTree<T> {
                         child.shiftRight();
                         child.keys[0] = node.keys[i - 1];
                         child.items[0] = node.items[i - 1];
-                        if (!child.isLeaf) child.neighbours[0] = node.neighbours[i - 1];
+                        if (!child.isLeaf) child.neighbours[0] = childLeft.neighbours[i - 1];
                         ++child.numKeys;
 
                         node.keys[i - 1] = childLeft.keys[childLeft.numKeys - 1];
@@ -209,7 +210,7 @@ public class BTree<T> {
                     } else if (childRight != null && childRight.numKeys >= minChildren) {
                         child.keys[childRight.numKeys] = node.keys[i];
                         child.items[childRight.numKeys] = node.items[i];
-                        if (!child.isLeaf) child.neighbours[childRight.numKeys] = node.neighbours[i];
+                        if (!child.isLeaf) child.neighbours[childRight.numKeys+1] = childRight.neighbours[0];
                         ++child.numKeys;
 
                         node.keys[i] = childRight.keys[0];

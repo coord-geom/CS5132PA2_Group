@@ -12,15 +12,19 @@ public class BTree_Tester {
     }
     public static BTree_<Character> testBasicInsertion() {
         BTree_<Character> tree = new BTree_<>(3);
-        tree.add('A');
-        tree.add('R');
-        tree.add('E');
-        tree.add('Y');
-        tree.add('O');
-        tree.add('U');
-        tree.add('G');
-        tree.add('I');
-        tree.add('M');
+
+        for(int i=0;i<=25;++i){
+            tree.add((char)((int)'a'+i));
+            tree.add((char)((int)'A'+i));
+        }
+
+        System.out.println(tree);
+
+        for(int i=0;i<=7;++i){
+            tree.delete((char)((int)'a'+i));
+            System.out.println(tree);
+        }
+
         return tree;
     }
 }

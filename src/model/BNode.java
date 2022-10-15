@@ -66,7 +66,7 @@ public class BNode<T> extends Node<T> {
     public void remove(int id, int shift) { // left is 0, right is 1
         if (id >= 0) {
             int i;
-            for (i = id; i < numKeys; ++i) {
+            for (i = id; i < numKeys - 1; ++i) {
                 keys[i] = keys[i + 1];
                 items[i] = items[i + 1];
                 if (!isLeaf) {
