@@ -16,7 +16,6 @@ public class BTreeDisplay extends Canvas {
      * The B Tree displayed
      */
     private BTree<?> tree;
-    private FontMetrics fontMetrics;
 
     /**
      * Constructor
@@ -43,20 +42,9 @@ public class BTreeDisplay extends Canvas {
         return tree;
     }
 
-    /**
-     * Returns the bounds of a string to be printed.
-     * @param text the text whose bounds are to be found
-     * @param graphics the graphics instance
-     * @return the bounds noted by a Rectangle2D object
-     */
-    private Rectangle2D getStringBounds(String text, Graphics graphics) {
-        return fontMetrics.getStringBounds(text, graphics);
-    }
-
     @Override
     public void paint(Graphics graphics) {
         graphics.setFont(new Font("Courier New", Font.BOLD, 20));
-        fontMetrics = graphics.getFontMetrics();
 
         setBackground(Color.WHITE);
         drawNode(graphics, 100, 100, tree.getRootNode());
@@ -69,6 +57,7 @@ public class BTreeDisplay extends Canvas {
      * @param posY the y position
      * @param item the item whose toString will be used for display
      */
+    @Deprecated
     private void drawItem(Graphics graphics, int posX, int posY, Object item) {
         String text = item.toString();
 
@@ -87,6 +76,7 @@ public class BTreeDisplay extends Canvas {
      * @param posY the y position
      * @param node the node to be displayed
      */
+    @Deprecated
     private void drawNode(Graphics graphics, int posX, int posY, BNode<?> node) {
         Object[] items = node.getItems();
         int gapSize = 5;
@@ -117,7 +107,58 @@ public class BTreeDisplay extends Canvas {
         }
     }
 
-    private void drawLevel(Graphics graphics, int posX, int posY) {
+    /**
+     * Returns the bounds of a string to be printed.
+     * Rectangle2D values have an initial 0,0 position
+     * @param text the text whose bounds are to be found
+     * @param graphics the graphics instance
+     * @return the bounds noted by a Rectangle2D object
+     */
+    static Rectangle2D getStringBounds(String text, Graphics graphics) {
+        return graphics.getFontMetrics().getStringBounds(text, graphics);
+    }
 
+    /**
+     * Returns an array of bounds of string to be printed.
+     * Rectangle2D values have an initial 0,0 position.
+     * <br>
+     * <b>The bounds of each string are also positioned to line up next to each other,
+     * as if the text were lined horizontally.</b>
+     * @param textArray the array of text whose bounds are to be found
+     * @param graphics the graphics instance
+     * @param spacing the spacing in between each string bounds
+     * @return the bounds noted by a Rectangle2D object
+     */
+    static Rectangle2D[] getStringBounds(String[] textArray,
+                                                 Graphics graphics,
+                                                 double spacing) {
+        Rectangle2D[] boundsArray = new Rectangle2D[textArray.length];
+        double accumulatingX = 0;
+        Rectangle2D rect;
+        for (int i = 0; i < textArray.length; i++) {
+            rect = getStringBounds(textArray[i], graphics);
+            rect.setRect(accumulatingX, 0, rect.getWidth(), rect.getHeight());
+            accumulatingX += rect.getWidth();
+            boundsArray[i] = rect;
+        }
+        return boundsArray;
+    }
+
+    /**
+     * Fills a rectangle with padding in a given graphics instance
+     * @param graphics the graphics instance
+     * @param x the x position
+     * @param y the y position
+     * @param w the width of the rectangle without padding
+     * @param h the height of the rectangle without padding
+     * @param padding the padding
+     */
+    static void fillRectPadding(Graphics graphics, double x, double y, double w, double h, double padding) {
+        graphics.fillRect(
+                (int) (x - padding),
+                (int) (y - padding),
+                (int) (w + padding * 2),
+                (int) (h + padding * 2)
+        );
     }
 }

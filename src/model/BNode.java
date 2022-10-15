@@ -30,6 +30,14 @@ public class BNode<T> extends Node<T>{
         return items;
     }
 
+    /**
+     * Returns the child nodes of the B Node.
+     * @return a Node array of children.
+     */
+    public Node<?>[] getNeighbours() {
+        return neighbours;
+    }
+
     public int binarySearch(int key){
         int left = 0, right = numKeys - 1;
         while(left < right){
