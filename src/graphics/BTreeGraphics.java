@@ -91,13 +91,13 @@ public class BTreeGraphics {
         int height = getTree().getHeight();
 
         // List to record down level order nodes
-        ArrayList<ArrayList<BNode_<?>>> levelsNodes = new ArrayList<>(height);
-        for (int i = 0; i < height; i++)
+        ArrayList<ArrayList<BNode_<?>>> levelsNodes = new ArrayList<>(height + 1);
+        for (int i = 0; i < height + 1; i++)
             levelsNodes.add(new ArrayList<>());
 
         // List to record down parent indices (index of the list on the level above the child node) of level order nodes
-        ArrayList<ArrayList<Integer>> levelsParent = new ArrayList<>(height);
-        for (int i = 0; i < height; i++)
+        ArrayList<ArrayList<Integer>> levelsParent = new ArrayList<>(height + 1);
+        for (int i = 0; i < height + 1; i++)
             levelsParent.add(new ArrayList<>());
 
         // Stack to keep track of next nodes to iterate.
@@ -109,7 +109,7 @@ public class BTreeGraphics {
         // Start from root
         nodesIterationStack.add(getTree().getRootNode());
         levelsIterationStack.add(0);
-        parentsIterationStack.add(-1);
+        parentsIterationStack.add(-1);  // Root node does not have a parent
 
         BNode_<?> currNode;
         int currLevel;
@@ -123,9 +123,9 @@ public class BTreeGraphics {
             currParentIndex = parentsIterationStack.remove(0);
 
             // Add data to the recording lists
-            currIndex = levelsNodes.get(currLevel).size() - 1;
+            currIndex = levelsNodes.get(currLevel).size();
             if (currLevel != 0)
-                levelsParent.get(currLevel - 1).add(currParentIndex);
+                levelsParent.get(currLevel).add(currParentIndex);
             levelsNodes.get(currLevel).add(currNode);
 
             // If the node is not a leaf, add more iterable child nodes and relevant data
@@ -134,7 +134,7 @@ public class BTreeGraphics {
                     if (node == null)
                         break;
                     nodesIterationStack.add((BNode_<?>) node);
-                    levelsIterationStack.add(currLevel);
+                    levelsIterationStack.add(currLevel + 1);  // Child nodes are one level down
                     parentsIterationStack.add(currIndex);
                 }
             }
@@ -147,20 +147,21 @@ public class BTreeGraphics {
         ArrayList<NodeGraphics> nodeGraphics = new ArrayList<>();
 
         // Records into level separated lists for easy retrieval of parent nodes.
-        ArrayList<ArrayList<NodeGraphics>> levelsNodeGraphics = new ArrayList<>();
-        for (int i = 0; i < height; i++)
+        ArrayList<ArrayList<NodeGraphics>> levelsNodeGraphics = new ArrayList<>(height + 1);
+        for (int i = 0; i < height + 1; i++)
             levelsNodeGraphics.add(new ArrayList<>());
 
         // Iterate through all nodes and create node graphics
         NodeGraphics parentNode;
         NodeGraphics newNodeGraphics;
-        for (int level = 0; level < height; level++) {
+        for (int level = 0; level < height + 1; level++) {
             int x = 0;  //TODO
             for (int i = 0; i < levelsNodes.get(level).size(); i++) {
                 // Adding parent NodeGraphic objects to current node classes is possible
                 // as the recording lists maintain the property that the parent nodes are always before child nodes
                 // due to the breadth-first iteration.
                 if (level != 0)
+                    // gets the parent from one level up
                     parentNode = levelsNodeGraphics.get(level - 1).get(levelsParent.get(level).get(i));
                 else
                     parentNode = null;
@@ -186,9 +187,6 @@ public class BTreeGraphics {
 
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawBody(graphics);
-
-        for (NodeGraphics a: nodeGraphics)
-            System.out.println(a);
         // drawChildConnections is called after drawBody is called
         // as it requires the positional coordinate data of the child nodes to be initialised first
         for (NodeGraphics nodeGraphic : nodeGraphics)
