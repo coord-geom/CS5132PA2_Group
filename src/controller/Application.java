@@ -1,7 +1,7 @@
 package controller;
 
 import graphics.BTreeDisplay;
-import model.BTree_;
+import model.BTree;
 import model.graphics.IntegerTreeItemFactory;
 
 import javax.swing.*;
@@ -13,7 +13,7 @@ import java.awt.*;
 public class Application {
     public Application() {
         JFrame rootFrame = new JFrame();
-        BTree_<Integer> tree = new BTree_<>(3);
+        BTree<Integer> tree = new BTree<>(3);
         tree.add(3);
         tree.add(6);
         tree.add(7);

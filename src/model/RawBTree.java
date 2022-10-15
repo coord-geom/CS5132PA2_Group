@@ -220,7 +220,7 @@ public class RawBTree {
                     Node erasureNode = predecessorNode; // Make sure not to delete a key from a node with only T - 1 elements.
                     while (!predecessorNode.mIsLeafNode) { // Therefore only descend to the previous node (erasureNode) of the predecessor node and delete the key using 3.
                         erasureNode = predecessorNode;
-                        predecessorNode = predecessorNode.mChildNodes[node.mNumKeys - 1];
+                        predecessorNode = predecessorNode.mChildNodes[predecessorNode.mNumKeys];
                     }
                     node.mKeys[i] = predecessorNode.mKeys[predecessorNode.mNumKeys - 1];
                     node.mObjects[i] = predecessorNode.mObjects[predecessorNode.mNumKeys - 1];

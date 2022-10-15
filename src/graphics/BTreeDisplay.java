@@ -1,7 +1,7 @@
 package graphics;
 
-import model.BNode_;
-import model.BTree_;
+import model.BNode;
+import model.BTree;
 import model.graphics.TreeItemFactory;
 
 import java.awt.*;
@@ -37,7 +37,7 @@ public class BTreeDisplay extends Canvas {
      * @param treeItemFactory the factory used to create items.
      * @param tree the B Tree.
      */
-    public BTreeDisplay(TreeItemFactory<?> treeItemFactory, BTree_<?> tree) {
+    public BTreeDisplay(TreeItemFactory<?> treeItemFactory, BTree<?> tree) {
         super();
         this.treeItemFactory = treeItemFactory;
         this.treeGraphics = new BTreeGraphics(tree);
@@ -63,7 +63,7 @@ public class BTreeDisplay extends Canvas {
      * Getter for the B Tree
      * @return the B Tree
      */
-    public BTree_ getTree() {
+    public BTree getTree() {
         return treeGraphics.getTree();
     }
 
@@ -155,8 +155,8 @@ public class BTreeDisplay extends Canvas {
      * @param node the node to be displayed
      */
     @Deprecated
-    private void drawNode(Graphics graphics, int posX, int posY, BNode_<?> node) {
-        Object[] items = node.getItems();
+    private void drawNode(Graphics graphics, int posX, int posY, BNode<?> node) {
+        Object[] items = node.items;
         int gapSize = 5;
         // Loop through once to get the width and height of the node.
         int width = gapSize;

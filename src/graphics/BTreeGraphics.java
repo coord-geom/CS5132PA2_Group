@@ -1,7 +1,7 @@
 package graphics;
 
-import model.BNode_;
-import model.BTree_;
+import model.BNode;
+import model.BTree;
 import model.Node;
 
 import java.awt.*;
@@ -12,14 +12,14 @@ import java.util.ArrayList;
  * Wrapper class for a B Tree to be used in the BTreeDisplay Canvas.
  */
 public class BTreeGraphics {
-    private BTree_<?> tree;
+    private BTree tree;
 
     /**
      * Constructor with tree input.
      *
      * @param tree the B Tree.
      */
-    public BTreeGraphics(BTree_<?> tree) {
+    public BTreeGraphics(BTree<?> tree) {
         this.tree = tree;
     }
 
@@ -28,7 +28,7 @@ public class BTreeGraphics {
      *
      * @return the B Tree
      */
-    public BTree_<?> getTree() {
+    public BTree getTree() {
         return tree;
     }
 
@@ -46,7 +46,7 @@ public class BTreeGraphics {
         int height = getTree().getHeight();
 
         // List to record down level order nodes
-        ArrayList<ArrayList<BNode_<?>>> levelsNodes = new ArrayList<>(height);
+        ArrayList<ArrayList<BNode>> levelsNodes = new ArrayList<>(height);
         for (int i = 0; i < height; i++)
             levelsNodes.add(new ArrayList<>());
 
@@ -56,17 +56,17 @@ public class BTreeGraphics {
             levelsParent.add(new ArrayList<>());
 
         // Stack to keep track of next nodes to iterate.
-        ArrayList<BNode_<?>> nodesIterationStack = new ArrayList<>();
+        ArrayList<BNode<?>> nodesIterationStack = new ArrayList<>();
         // Stack to keep track of the levels of the nodes in the iteration stack.
         ArrayList<Integer> levelsIterationStack = new ArrayList<>();
         // Stack to keep track of the indices of the parents of the nodes in the iteration stack.
         ArrayList<Integer> parentsIterationStack = new ArrayList<>();
         // Start from root
-        nodesIterationStack.add(getTree().getRootNode());
+        nodesIterationStack.add(getTree().root);
         levelsIterationStack.add(0);
         parentsIterationStack.add(-1);
 
-        BNode_<?> currNode;
+        BNode<?> currNode;
         int currLevel;
         int currParentIndex;
         int currIndex;
@@ -84,11 +84,11 @@ public class BTreeGraphics {
             levelsNodes.get(currLevel).add(currNode);
 
             // If the node is not a leaf, add more iterable child nodes and relevant data
-            if (!currNode.isLeaf()) {
-                for (Node<?> node: currNode.getNeighbours()) {
+            if (!currNode.isLeaf) {
+                for (Node<?> node: currNode.neighbours) {
                     if (node == null)
                         break;
-                    nodesIterationStack.add((BNode_<?>) node);
+                    nodesIterationStack.add((BNode<?>) node);
                     levelsIterationStack.add(currLevel);
                     parentsIterationStack.add(currIndex);
                 }
@@ -190,7 +190,7 @@ public class BTreeGraphics {
          * @param node              the node of the B Tree with relevant data
          * @param parentNodeGraphic the parent node, null if does not exist
          */
-        NodeGraphics(double posX, double posY, BNode_<?> node, NodeGraphics parentNodeGraphic) {
+        NodeGraphics(double posX, double posY, BNode<?> node, NodeGraphics parentNodeGraphic) {
             this.items = null;
             initialiseItems(node);
 
@@ -323,8 +323,8 @@ public class BTreeGraphics {
          *
          * @param node the node input with relevant data.
          */
-        private void initialiseItems(BNode_<?> node) {
-            Object[] items = node.getItems();
+        private void initialiseItems(BNode<?> node) {
+            Object[] items = node.items;
             // Find the number of non-null values
             int numNonNull = 0;
             // Since null values are always towards the end of the array, we iterate until we find a null value

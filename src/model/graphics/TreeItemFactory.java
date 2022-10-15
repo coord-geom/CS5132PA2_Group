@@ -1,6 +1,6 @@
 package model.graphics;
 
-import model.BTree_;
+import model.BTree;
 
 /**
  * Factory interface used by the graphics classes to create items and B Trees from user input string values,
@@ -22,9 +22,10 @@ public interface TreeItemFactory<T extends Comparable<? super T>> {
 
     /**
      * Create an empty B Tree object with given minimum number of children
+     *
      * @param minChildren the minimum number of children
      * @return a new empty B Tree
      */
-    BTree_<T> createEmptyTree(int minChildren);
+    BTree<?> createEmptyTree(int minChildren);
 
 }

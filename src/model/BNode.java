@@ -2,101 +2,90 @@ package model;
 
 import java.util.Arrays;
 
-/**
- * Implementation of a node in a B Tree
- * Taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
- * Google is best
- */
-@Deprecated
-public class BNode<T> extends Node<T> {
+public class BNode<T extends Comparable<? super T>> extends Node<T>{
+    public int numItems = 0;
+    public T[] items;
+    public BNode[] neighbours;
+    public boolean isLeaf;
 
-    int numKeys = 0;
-    int[] keys;
-    T[] items;
-    boolean isLeaf;
-    // neighbours is childNodes;
-
-    public BNode(int numNeighbours) {
-        // The "item" attribute in the node superclass is not used as the implementation requires an array of T items
-        super(null, numNeighbours);
-        keys = new int[numNeighbours - 1];
-        items = (T[]) new Object[numNeighbours - 1];
+    public BNode(int maxChildren){
+        super(null, maxChildren);
+        items = (T[]) new Comparable[maxChildren-1];
+        neighbours = new BNode[maxChildren];
     }
 
-    /**
-     * Returns the array of items contained in the node.
-     *
-     * @return an array of generic type items
-     */
-    public T[] getItems() {
-        return items;
-    }
+    int binarySearch(T item) {
+        int leftIndex = 0;
+        int rightIndex = numItems - 1;
 
-    /**
-     * Returns the child nodes of the B Node.
-     *
-     * @return a Node array of children.
-     */
-    public Node<?>[] getNeighbours() {
-        return neighbours;
-    }
-
-    public int binarySearch(int key) {
-        int left = 0, right = numKeys - 1;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (keys[mid] < key) left = mid + 1;
-            else if (keys[mid] > key) right = mid - 1;
-            else return mid;
+        while (leftIndex <= rightIndex) {
+            final int middleIndex = leftIndex + ((rightIndex - leftIndex) / 2);
+            if (items[middleIndex].compareTo(item) < 0) {
+                leftIndex = middleIndex + 1;
+            } else if (items[middleIndex].compareTo(item) > 0) {
+                rightIndex = middleIndex - 1;
+            } else {
+                return middleIndex;
+            }
         }
+
         return -1;
     }
 
     /**
-     * Returns whether a key exists in the node.
+     * Returns whether a item exists in the node.
      * Uses binary search
      *
-     * @param key the key to be searched
-     * @return boolean of whether the key exists
+     * @param item the item to be searched
+     * @return boolean of whether the item exists
      */
-    public boolean containsKey(int key) {
-        return binarySearch(key) != 1;
+
+    boolean contains(T item) {
+        return binarySearch(item) != -1;
     }
 
-    public void remove(int id, int shift) { // left is 0, right is 1
-        if (id >= 0) {
+    // Remove an element from a node and also the left (0) or right (+1) child.
+    void remove(int index, int leftOrRightChild) {
+        if (index >= 0) {
             int i;
-            for (i = id; i < numKeys - 1; ++i) {
-                keys[i] = keys[i + 1];
+            for (i = index; i < numItems - 1; i++) {
                 items[i] = items[i + 1];
                 if (!isLeaf) {
-                    if (i >= id + shift) neighbours[i] = neighbours[i + 1];
+                    if (i >= index + leftOrRightChild) {
+                        neighbours[i] = neighbours[i + 1];
+                    }
                 }
             }
-            keys[i] = 0;
             items[i] = null;
             if (!isLeaf) {
-                if (i >= id + shift) neighbours[i] = neighbours[i + 1];
+                if (i >= index + leftOrRightChild) {
+                    neighbours[i] = neighbours[i + 1];
+                }
                 neighbours[i + 1] = null;
             }
-            numKeys--;
+            numItems--;
         }
     }
 
-    public void shiftRight() {
-        if (!isLeaf) neighbours[numKeys + 1] = neighbours[numKeys];
-        for (int i = numKeys - 1; i >= 0; --i) {
-            keys[i + 1] = keys[i];
+    void shiftRightByOne() {
+        if (!isLeaf) {
+            neighbours[numItems + 1] = neighbours[numItems];
+        }
+        for (int i = numItems - 1; i >= 0; i--) {
             items[i + 1] = items[i];
-            if (!isLeaf) neighbours[i + 1] = neighbours[i];
+            if (!isLeaf) {
+                neighbours[i + 1] = neighbours[i];
+            }
         }
     }
 
-    public int subtreeRootNodeIndex(int key) {
-        for (int i = 0; i < numKeys; ++i) {
-            if (key < keys[i]) return i;
+    int subtreeRootNodeIndex(T item) {
+        for (int i = 0; i < numItems; i++) {
+            if (item.compareTo(items[i]) < 0) {
+                return i;
+            }
         }
-        return numKeys;
+        return numItems;
     }
 
     @Override
@@ -121,7 +110,7 @@ public class BNode<T> extends Node<T> {
 
         for (Node node : neighbours) {
             if (node != null) {
-                if (node != neighbours[numKeys - 1]) {
+                if (numItems != 0 && node != neighbours[numItems - 1]) {
                     ((BNode<?>) node).print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
                 } else {
                     ((BNode<?>) node).print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
@@ -129,5 +118,4 @@ public class BNode<T> extends Node<T> {
             }
         }
     }
-
 }

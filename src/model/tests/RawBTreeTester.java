@@ -1,7 +1,6 @@
 package model.tests;
 
 import model.RawBTree;
-import model.BTree_;
 
 public class RawBTreeTester {
     public static void main(String[] args) {
@@ -18,8 +17,8 @@ public class RawBTreeTester {
 
         System.out.println(tree);
 
-        for(int i=0;i<=25;++i){
-            tree.delete((i+26));
+        for(int i=13;i<=38;++i){
+            tree.delete((i));
             System.out.println(tree);
         }
 
