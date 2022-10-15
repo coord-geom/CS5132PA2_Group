@@ -6,6 +6,10 @@ import model.graphics.IntegerTreeItemFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Simple Java Swing Application
@@ -25,6 +29,7 @@ public class Application {
         tree.add("Lee Hsien Loong");
         tree.add("Arnold Swarznegger");
         tree.add("Bernard Ricardo");
+
         System.out.println("In Application:");
         System.out.println(tree);
         BTreeDisplay display = new BTreeDisplay(new IntegerTreeItemFactory(), tree);
