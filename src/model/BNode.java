@@ -2,12 +2,12 @@ package model;
 
 import java.util.Arrays;
 
+/**
+ * Implementation of a node in a B Tree
+ * Taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
+ * Google is best
+ */
 public class BNode<T> extends Node<T>{
-
-    /**
-     * Implementation is taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
-     * Google is the best
-     */
 
     int numKeys = 0;
     int[] keys;
@@ -16,11 +16,16 @@ public class BNode<T> extends Node<T>{
     // neighbours is childNodes;
 
     public BNode(int numNeighbours) {
+        // The "item" attribute in the node superclass is not used as the implementation requires an array of T items
         super(null, numNeighbours);
         keys = new int[numNeighbours-1];
         items = (T[]) new Object[numNeighbours-1];
     }
 
+    /**
+     * Returns the array of items contained in the node.
+     * @return an array of generic type items
+     */
     public T[] getItems() {
         return items;
     }
@@ -36,6 +41,12 @@ public class BNode<T> extends Node<T>{
         return -1;
     }
 
+    /**
+     * Returns whether a key exists in the node.
+     * Uses binary search
+     * @param key the key to be searched
+     * @return boolean of whether the key exists
+     */
     public boolean containsKey(int key){ return binarySearch(key) != 1; }
 
     public void remove(int id, int shift){ // left is 0, right is 1
@@ -78,6 +89,14 @@ public class BNode<T> extends Node<T>{
         print(buffer, "", "");
         return buffer.toString();
     }
+
+    /**
+     * Auxiliary private method used in toString method to get the string representation of the subtree with the
+     * node object as the root node
+     * @param buffer the StringBuffer used
+     * @param prefix prefix for current node
+     * @param childrenPrefix prefix for child nodes
+     */
     private void print(StringBuilder buffer, String prefix, String childrenPrefix) {
         buffer.append(prefix);
         buffer.append(Arrays.asList(items));

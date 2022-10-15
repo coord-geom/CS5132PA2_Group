@@ -68,19 +68,16 @@ public class BTreeDisplay extends Canvas {
      * @param posX the x position
      * @param posY the y position
      * @param item the item whose toString will be used for display
-     * @return the Rectangle2D bounds of the item displayed
      */
-    private Rectangle2D drawItem(Graphics graphics, int posX, int posY, Object item) {
+    private void drawItem(Graphics graphics, int posX, int posY, Object item) {
         String text = item.toString();
 
-        graphics.setColor(Color.BLUE);
+        graphics.setColor(Color.YELLOW);
         Rectangle2D rect = getStringBounds(text, graphics);
         graphics.fillRect(posX, posY, (int)rect.getWidth(), (int)rect.getHeight());
 
-        graphics.setColor(Color.yellow);
+        graphics.setColor(Color.BLACK);
         graphics.drawString(text, posX, posY + (int)(rect.getHeight() * (3./4.)));
-
-        return rect;
     }
 
     /**
@@ -92,26 +89,35 @@ public class BTreeDisplay extends Canvas {
      */
     private void drawNode(Graphics graphics, int posX, int posY, BNode<?> node) {
         Object[] items = node.getItems();
+        int gapSize = 5;
         // Loop through once to get the width and height of the node.
-        int width = 0;
+        int width = gapSize;
         int maxHeight = 0;
         for (Object item: items) {
             if (item == null)
                 break;
             Rectangle2D rect = getStringBounds(item.toString(), graphics);
-            width += rect.getWidth() + 5; // 5 is added for the gap between the items
+            width += rect.getWidth() + gapSize; // gapSize is added for the gap between the items
             if (maxHeight < rect.getHeight())
                 maxHeight = (int) rect.getHeight();
         }
+
         // Draw the node
-        graphics.setColor(Color.orange);
-        graphics.fillRect(posX, posY, width, maxHeight);
+        graphics.setColor(Color.ORANGE);
+        graphics.fillRect(posX, posY - gapSize, width, maxHeight + gapSize + gapSize);
+
         // Loop through again to draw items
+        posX += gapSize;
         for (Object item: items) {
             if (item == null)
                 break;
-            Rectangle2D rect = drawItem(graphics, posX, posY, item);
-            posX += rect.getWidth() + 5;
+            drawItem(graphics, posX, posY, item);
+            Rectangle2D rect = getStringBounds(item.toString(), graphics);
+            posX += rect.getWidth() + gapSize;
         }
+    }
+
+    private void drawLevel(Graphics graphics, int posX, int posY) {
+
     }
 }

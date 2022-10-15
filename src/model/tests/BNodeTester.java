@@ -1,4 +1,6 @@
-package model;
+package model.tests;
+
+import model.BTree;
 
 //TODO make actual content
 public class BNodeTester {
@@ -11,5 +13,8 @@ public class BNodeTester {
             //System.out.println(i);
         }
         System.out.println(btree);
+    }
+    public static boolean test() {
+        return true;
     }
 }
