@@ -14,7 +14,7 @@ public class IntegerTreeItemFactory implements TreeItemFactory<Integer> {
 
     @Override
     public BTree<?> createEmptyTree(int minChildren) {
-        return new BTree_<>(minChildren);
+        return new BTree<>(minChildren);
     }
 
 }
