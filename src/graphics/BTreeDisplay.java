@@ -44,6 +44,26 @@ public class BTreeDisplay extends Canvas {
     }
 
     /**
+     * Sets the offset of the tree graphics
+     * @param xAmount the x amount offset
+     * @param yAmount the y amount affset
+     */
+    public void setOffset(double xAmount, double yAmount) {
+        this.treeGraphics.setXOffset(xAmount);
+        this.treeGraphics.setYOffset(yAmount);
+    }
+
+    /**
+     * Changes the offset of the tree graphics by specified amounts
+     * @param xAmount the x amount changed
+     * @param yAmount the y amount changed
+     */
+    public void changeOffset(double xAmount, double yAmount) {
+        this.treeGraphics.setXOffset(this.treeGraphics.getXOffset() + xAmount);
+        this.treeGraphics.setYOffset(this.treeGraphics.getYOffset() + yAmount);
+    }
+
+    /**
      * Adds an item into the B Tree using a string representation of the item.
      * @param itemStrRep the string representation of the item
      */
@@ -99,7 +119,7 @@ public class BTreeDisplay extends Canvas {
                                                  Graphics graphics,
                                                  double spacing) {
         Rectangle2D[] boundsArray = new Rectangle2D[textArray.length];
-        double accumulatingX = -spacing;  // Removes the extra spacing for a total of (n-1) spacings
+        double accumulatingX = 0;  // Removes the extra spacing for a total of (n-1) spacings
         Rectangle2D rect;
         for (int i = 0; i < textArray.length; i++) {
             rect = getStringBounds(textArray[i], graphics);

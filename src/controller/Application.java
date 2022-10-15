@@ -25,6 +25,7 @@ public class Application {
         System.out.println("In Application:");
         System.out.println(tree);
         BTreeDisplay display = new BTreeDisplay(new IntegerTreeItemFactory(), tree);
+        display.setOffset(100, 100);
         rootFrame.add(display);
 
         TextField textField = new TextField();

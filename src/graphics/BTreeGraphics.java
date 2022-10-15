@@ -7,12 +7,26 @@ import model.Node;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Wrapper class for a B Tree to be used in the BTreeDisplay Canvas.
  */
 public class BTreeGraphics {
+
+    /**
+     * The wrapped B Tree object
+     */
     private BTree_<?> tree;
+
+    /**
+     * The offset x amount for the display graphics
+     */
+    private double xOffset;
+    /**
+     * The offset y amount for the display graphics
+     */
+    private double yOffset;
 
     /**
      * Constructor with tree input.
@@ -21,6 +35,8 @@ public class BTreeGraphics {
      */
     public BTreeGraphics(BTree_<?> tree) {
         this.tree = tree;
+        setXOffset(0);
+        setYOffset(0);
     }
 
     /**
@@ -30,6 +46,35 @@ public class BTreeGraphics {
      */
     public BTree_<?> getTree() {
         return tree;
+    }
+
+    /**
+     * Getter for x offset
+     * @return the x offset
+     */
+    public double getXOffset() {
+        return xOffset;
+    }
+    /**
+     * Getter for y offset
+     * @return the y offset
+     */
+    public double getYOffset() {
+        return yOffset;
+    }
+    /**
+     * Setter for x offset
+     * @param xOffset the new x offset
+     */
+    public void setXOffset(double xOffset) {
+        this.xOffset = xOffset;
+    }
+    /**
+     * Setter for y offset
+     * @param yOffset the new y offset
+     */
+    public void setYOffset(double yOffset) {
+        this.yOffset = yOffset;
     }
 
     /**
@@ -119,7 +164,9 @@ public class BTreeGraphics {
                     parentNode = levelsNodeGraphics.get(level - 1).get(levelsParent.get(level).get(i));
                 else
                     parentNode = null;
-                newNodeGraphics = new NodeGraphics(x, level * 100, levelsNodes.get(level).get(i), parentNode);
+                newNodeGraphics = new NodeGraphics(
+                        x + getXOffset(), level * 100 + getYOffset(),
+                        levelsNodes.get(level).get(i), parentNode);
                 levelsNodeGraphics.get(level).add(newNodeGraphics);
                 nodeGraphics.add(newNodeGraphics);
                 x += 300;
@@ -136,27 +183,30 @@ public class BTreeGraphics {
      */
     void draw(Graphics graphics) {
         ArrayList<NodeGraphics> nodeGraphics = getNodeGraphics();
+
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawBody(graphics);
+
+        for (NodeGraphics a: nodeGraphics)
+            System.out.println(a);
         // drawChildConnections is called after drawBody is called
         // as it requires the positional coordinate data of the child nodes to be initialised first
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawChildConnections(graphics);
     }
-
     /**
      * A class representing the nodes of the B Tree to be drawn.
      */
     static class NodeGraphics {
 
         // Default values and settings
-        private final static double SPACING = 5;
-        private final static double PADDING = 10;
-        private final static double ITEM_PADDING = 2;
+        private final static double SPACING = 4;
+        private final static double PADDING = 8;
+        private final static double ITEM_PADDING = 4;
         private final static Color BG_COLOR = Color.BLACK;
         private final static Color ITEM_BG_COLOR = Color.BLUE;
-        private final static Color FONT_COLOR = Color.WHITE;
-        private final static Font FONT = new Font("Courier New", Font.BOLD, 20);
+        private final static Color FONT_COLOR = Color.GREEN;
+        private final static Font FONT = new Font("Arial", Font.BOLD, 20);
 
         /**
          * The item representation of the items inside the Node
@@ -178,7 +228,8 @@ public class BTreeGraphics {
         private final double[] dimensions;
 
         /**
-         * The children of the node.
+         * The NodeGraphics object that is the parent of the node.
+         * May be null if parent does not exist.
          */
         private NodeGraphics parent;
 
@@ -188,7 +239,7 @@ public class BTreeGraphics {
          * @param posX              the x position of the graphic
          * @param posY              the y position of the graphic
          * @param node              the node of the B Tree with relevant data
-         * @param parentNodeGraphic the parent node, null if does not exist
+         * @param parentNodeGraphic the parent node, null if it does not exist
          */
         NodeGraphics(double posX, double posY, BNode_<?> node, NodeGraphics parentNodeGraphic) {
             this.items = null;
@@ -218,12 +269,15 @@ public class BTreeGraphics {
             // Update dimensions
             dimensions[0] = 0;
             dimensions[1] = 0;
+            int numItemsCounted = 0;  // Used to add correct padding and spacing values
             for (Rectangle2D bounds : itemBounds) {
                 dimensions[0] += bounds.getWidth();
+                if (numItemsCounted != 0)
+                    dimensions[0] += ITEM_PADDING * 2 + SPACING;
+                numItemsCounted += 1;
                 if (dimensions[1] < bounds.getHeight())
                     dimensions[1] = bounds.getHeight();
             }
-
             // Draw Node
             graphics.setColor(BG_COLOR);
             BTreeDisplay.fillRectPadding(
@@ -239,17 +293,18 @@ public class BTreeGraphics {
                 graphics.setColor(ITEM_BG_COLOR);
                 BTreeDisplay.fillRectPadding(
                         graphics,
-                        itemBounds[i].getX(),
-                        itemBounds[i].getY(),
+                        itemBounds[i].getX() + getPosX(),
+                        itemBounds[i].getY() + getPosY(),
                         itemBounds[i].getWidth(),
                         itemBounds[i].getHeight(),
                         ITEM_PADDING);
 
                 graphics.setColor(FONT_COLOR);
-                graphics.drawString(
-                        items[i],
-                        (int) itemBounds[i].getX(),
-                        (int) itemBounds[i].getY());
+                graphics.drawString(items[i],
+                        (int) (itemBounds[i].getX() + getPosX()),
+                        (int) (itemBounds[i].getY() + getPosY() + itemBounds[i].getHeight() * 4/5));
+                // Height added as drawString draws using coords as the bottom left corner of the text bounding box
+                // Multiplied by a constant 4/5 is as it looks more center
             }
         }
 
@@ -350,6 +405,15 @@ public class BTreeGraphics {
         private void move(double x, double y) {
             setPosX(getPosX() + x);
             setPosY(getPosY() + y);
+        }
+
+        @Override
+        public String toString() {
+            return "<<< NODE >>>\nItems: " + Arrays.toString(items) +
+                    "\nCoords: " + Arrays.toString(coords) +
+                    "\nDimensions: " + Arrays.toString(dimensions) +
+                    "\nParent: " + ((parent == null) ? "None" : Arrays.toString(parent.items)) +
+                    "\n";
         }
     }
 
