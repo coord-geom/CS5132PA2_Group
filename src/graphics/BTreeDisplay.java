@@ -139,12 +139,14 @@ public class BTreeDisplay extends Canvas {
      * @param h the height of the rectangle without padding
      * @param padding the padding
      */
-    static void fillRectPadding(Graphics graphics, double x, double y, double w, double h, double padding) {
-        graphics.fillRect(
+    static void fillRectPadding(Graphics2D graphics, double x, double y, double w, double h, double padding) {
+        graphics.fillRoundRect(
                 (int) (x - padding),
                 (int) (y - padding),
                 (int) (w + padding * 2),
-                (int) (h + padding * 2)
+                (int) (h + padding * 2),
+                (int) padding,
+                (int) padding
         );
     }
 

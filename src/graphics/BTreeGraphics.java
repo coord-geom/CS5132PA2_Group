@@ -258,6 +258,7 @@ public class BTreeGraphics {
          * @param graphics the graphics instance
          */
         void drawBody(Graphics graphics) {
+            Graphics2D graphics2D = (Graphics2D) graphics;  // More powerful graphics object
             graphics.setFont(FONT);
 
             // Default spacing is 5
@@ -279,7 +280,7 @@ public class BTreeGraphics {
             // Draw Node
             graphics.setColor(BG_COLOR);
             BTreeDisplay.fillRectPadding(
-                    graphics,
+                    graphics2D,
                     getPosX(),
                     getPosY(),
                     getWidth(),
@@ -290,7 +291,7 @@ public class BTreeGraphics {
             for (int i = 0; i < items.length; i++) {
                 graphics.setColor(ITEM_BG_COLOR);
                 BTreeDisplay.fillRectPadding(
-                        graphics,
+                        graphics2D,
                         itemBounds[i].getX() + getPosX(),
                         itemBounds[i].getY() + getPosY(),
                         itemBounds[i].getWidth(),
