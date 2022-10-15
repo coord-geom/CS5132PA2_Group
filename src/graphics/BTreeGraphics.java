@@ -1,6 +1,5 @@
 package graphics;
 
-import model.BNode;
 import model.BNode_;
 import model.BTree_;
 import model.Node;
@@ -11,25 +10,25 @@ import java.util.ArrayList;
 
 /**
  * Wrapper class for a B Tree to be used in the BTreeDisplay Canvas.
- *
- * @param tree The B Tree
  */
-public record BTreeGraphics(BTree_<?> tree) {
+public class BTreeGraphics {
+    private BTree_<?> tree;
 
     /**
      * Constructor with tree input.
      *
      * @param tree the B Tree.
      */
-    public BTreeGraphics {}
+    public BTreeGraphics(BTree_<?> tree) {
+        this.tree = tree;
+    }
 
     /**
      * Getter for the tree
      *
      * @return the B Tree
      */
-    @Override
-    public BTree_<?> tree() {
+    public BTree_<?> getTree() {
         return tree;
     }
 
@@ -44,7 +43,7 @@ public record BTreeGraphics(BTree_<?> tree) {
         // Iterate level-order through the tree using breadth-first iteration
         // Tracks down nodes as well as their children.
 
-        int height = tree().getHeight();
+        int height = getTree().getHeight();
 
         // List to record down level order nodes
         ArrayList<ArrayList<BNode_<?>>> levelsNodes = new ArrayList<>(height);
@@ -63,7 +62,7 @@ public record BTreeGraphics(BTree_<?> tree) {
         // Stack to keep track of the indices of the parents of the nodes in the iteration stack.
         ArrayList<Integer> parentsIterationStack = new ArrayList<>();
         // Start from root
-        nodesIterationStack.add(tree().getRootNode());
+        nodesIterationStack.add(getTree().getRootNode());
         levelsIterationStack.add(0);
         parentsIterationStack.add(-1);
 

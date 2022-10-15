@@ -2,7 +2,6 @@ package graphics;
 
 import model.BNode_;
 import model.BTree_;
-import model.graphics.IntegerTreeItemFactory;
 import model.graphics.TreeItemFactory;
 
 import java.awt.*;
@@ -65,7 +64,7 @@ public class BTreeDisplay extends Canvas {
      * @return the B Tree
      */
     public BTree_ getTree() {
-        return treeGraphics.tree();
+        return treeGraphics.getTree();
     }
 
     @Override
