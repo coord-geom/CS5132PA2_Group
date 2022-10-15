@@ -13,6 +13,7 @@ import java.util.ArrayList;
  * <br>
  * <em>Google is best</em>
  */
+@Deprecated
 public class BTree<T> {
 
     /**

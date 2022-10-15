@@ -3,9 +3,7 @@ package model;
 import java.util.ArrayList;
 
 /**
- * Implementation of a B Tree, where a key-item pair data is stored.
- * The key represents the item's "rank" and is used for comparing and sorting the data.
- * The keys should be unique
+ * Implementation of a B Tree
  * <br>
  * Utilises the model.BNode_ class
  * <br>
@@ -43,6 +41,30 @@ public class BTree_<T extends Comparable<? super T>> {
      */
     public BNode_<T> getRootNode() {
         return this.root;
+    }
+
+    /**
+     * Returns the height of the whole tree.
+     * @return the height of the tree.
+     */
+    public int getHeight() {
+        return getHeight(root);
+    }
+
+    /**
+     * Returns the height of the subtree with the given root.
+     * @param node the root of the subtree.
+     * @return the height of the tree.
+     */
+    public int getHeight(BNode_<T> node) {
+        int height = 0;
+        // Iterates down the tree until a leaf node is reached.
+        // Property of B Trees ensures the first child node always exists given a node is not a root.
+        while (!root.isLeaf) {
+            root = (BNode_<T>) root.neighbours[0];
+            height++;
+        }
+        return height;
     }
 
     public void add(T item) {

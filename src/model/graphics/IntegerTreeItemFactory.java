@@ -1,6 +1,6 @@
 package model.graphics;
 
-import model.BTree;
+import model.BTree_;
 
 /**
  * Factory class that creates items and B Trees
@@ -13,8 +13,8 @@ public class IntegerTreeItemFactory implements TreeItemFactory<Integer> {
     }
 
     @Override
-    public BTree<Integer> createEmptyTree(int minChildren) {
-        return new BTree<>(minChildren);
+    public BTree_<Integer> createEmptyTree(int minChildren) {
+        return new BTree_<>(minChildren);
     }
 
 }

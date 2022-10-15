@@ -7,6 +7,7 @@ import java.util.Arrays;
  * Taken from <a href="https://gist.github.com/adderllyer/3bfa2d04200386b5664c">...</a>
  * Google is best
  */
+@Deprecated
 public class BNode<T> extends Node<T> {
 
     int numKeys = 0;

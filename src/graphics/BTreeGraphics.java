@@ -1,9 +1,7 @@
 package graphics;
 
-import model.BNode;
-import model.BTree;
-import model.graphics.IntegerTreeItemFactory;
-import model.graphics.TreeItemFactory;
+import model.BNode_;
+import model.BTree_;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -11,80 +9,63 @@ import java.util.ArrayList;
 
 /**
  * Wrapper class for a B Tree to be used in the BTreeDisplay Canvas.
+ *
+ * @param tree The B Tree
  */
-class BTreeGraphics {
+public record BTreeGraphics(BTree_<?> tree) {
 
     /**
-     * The B Tree
-     */
-    private BTree<?> tree;
-
-    /**
-     * The factory class used to create new items in the tree.
-     */
-    private TreeItemFactory<?> treeItemFactory;
-
-    /**
-     * Empty constructor, creates an Integer B Tree by default
-     */
-    public BTreeGraphics() {
-        this(new IntegerTreeItemFactory());
-    }
-
-    /**
-     * Constructor with factory input.
-     * @param treeItemFactory the factory used to create the empty tree and items
-     */
-    BTreeGraphics(TreeItemFactory<?> treeItemFactory) {
-        // 3 is the default minimum number of children of a B Tree
-        this(treeItemFactory, treeItemFactory.createEmptyTree(3));
-    }
-
-    /**
-     * Constructor with factory input as well as tree input.
-     * @param treeItemFactory the factory used to create items.
+     * Constructor with tree input.
+     *
      * @param tree the B Tree.
      */
-    BTreeGraphics(TreeItemFactory<?> treeItemFactory, BTree<?> tree) {
-        this.treeItemFactory = treeItemFactory;
-        this.tree = tree;
-    }
+    public BTreeGraphics {}
 
     /**
-     * Adds an item into the B Tree using a string representation of the item.
-     * @param itemStrRep the string representation of the item
+     * Getter for the tree
+     *
+     * @return the B Tree
      */
-    //TODO
-    void addItem(String itemStrRep) {
-    }
-
-    /**
-     * Removes an item from the B Tree using a string representation of the item.
-     * @param itemStrRep the string representation of the item
-     */
-    //TODO
-    void removeItem(String itemStrRep) {
+    @Override
+    public BTree_<?> tree() {
+        return tree;
     }
 
     /**
      * Returns an ArrayList of NodeGraphics objects,
      * each with a draw() method that allows the whole tree to be displayed
+     *
      * @return an ArrayList of NodeGraphics objects.
      */
     //TODO
     private ArrayList<NodeGraphics> getNodeGraphics() {
+        ArrayList<ArrayList<NodeGraphics>> nodeGraphicsLevels = new ArrayList<>();
+
         return new ArrayList<>();
     }
 
     /**
+     * Iterate level-order through the tree
+     * @param nodeGraphicsLevels the given list of levels and nodes.
+     */
+    //TODO
+    private void getLevelOrderNodes(ArrayList<ArrayList<NodeGraphics>> nodeGraphicsLevels) {
+
+    }
+
+    /**
      * Draws the B Tree
+     *
      * @param graphics the graphics instance
      */
     void draw(Graphics graphics) {
-        ArrayList<NodeGraphics> nodes = getNodeGraphics();
-        for (NodeGraphics node: nodes) {
-            node.drawBody(graphics);
-        }
+        ArrayList<NodeGraphics> nodeGraphics = getNodeGraphics();
+        for (NodeGraphics nodeGraphic : nodeGraphics)
+            nodeGraphic.drawBody(graphics);
+        // drawChildConnections is called after drawBody is called
+        // as it requires the positional coordinate data of the child nodes to be initialised first
+        for (NodeGraphics nodeGraphic : nodeGraphics)
+            nodeGraphic.drawChildConnections(graphics);
     }
 
     /**
@@ -111,12 +92,13 @@ class BTreeGraphics {
          * (x, y)
          */
         private final double[] coords;
+
         /**
          * Width and height of the graphic, initialised value is (0, 0).
-         * values are only filled when draw() is called.
+         * values are only filled when drawBody() is called.
          * (w, h)
          */
-        private double[] dimensions;
+        private final double[] dimensions;
 
         /**
          * The children of the node.
@@ -125,12 +107,13 @@ class BTreeGraphics {
 
         /**
          * Constructor
-         * @param posX the x position of the graphic
-         * @param posY the y position of the graphic
-         * @param node the node of the B Tree with relevant data
+         *
+         * @param posX              the x position of the graphic
+         * @param posY              the y position of the graphic
+         * @param node              the node of the B Tree with relevant data
          * @param childNodeGraphics the child nodes
          */
-        NodeGraphics(double posX, double posY, BNode<?> node, NodeGraphics[] childNodeGraphics) {
+        NodeGraphics(double posX, double posY, BNode_<?> node, NodeGraphics[] childNodeGraphics) {
             this.items = new String[node.getItems().length];
             initialiseItems(node);
 
@@ -145,6 +128,7 @@ class BTreeGraphics {
 
         /**
          * Draws the main body of the node
+         *
          * @param graphics the graphics instance
          */
         void drawBody(Graphics graphics) {
@@ -157,7 +141,7 @@ class BTreeGraphics {
             // Update dimensions
             dimensions[0] = 0;
             dimensions[1] = 0;
-            for (Rectangle2D bounds: itemBounds) {
+            for (Rectangle2D bounds : itemBounds) {
                 dimensions[0] += bounds.getWidth();
                 if (dimensions[1] < bounds.getHeight())
                     dimensions[1] = bounds.getHeight();
@@ -193,7 +177,9 @@ class BTreeGraphics {
         }
 
         /**
-         * Draws the child connections
+         * Draws the child connections.
+         * To be called after every node has called drawBody()
+         *
          * @param graphics the graphics instance
          */
         //TODO child draw connections
@@ -203,27 +189,34 @@ class BTreeGraphics {
 
         /**
          * Getter
+         *
          * @return the x position of the graphic
          */
         private double getPosX() {
             return coords[0];
         }
+
         /**
          * Setter
+         *
          * @param posX the new x position of the graphic
          */
         private void setPosX(double posX) {
             coords[0] = posX;
         }
+
         /**
          * Getter
+         *
          * @return the y position of the graphic
          */
         private double getPosY() {
             return coords[1];
         }
+
         /**
          * Setter
+         *
          * @param posY the new y position of the graphic
          */
         private void setPosY(double posY) {
@@ -232,13 +225,16 @@ class BTreeGraphics {
 
         /**
          * Getter
+         *
          * @return the width of the graphic
          */
         private double getWidth() {
             return dimensions[0];
         }
+
         /**
          * Getter
+         *
          * @return the height of the graphic
          */
         private double getHeight() {
@@ -247,9 +243,10 @@ class BTreeGraphics {
 
         /**
          * Initialises the String array of item string representations stored in the BNodeGraphics object.
+         *
          * @param node the node input with relevant data.
          */
-        private void initialiseItems(BNode<?> node) {
+        private void initialiseItems(BNode_<?> node) {
             Object[] items = node.getItems();
             for (int i = 0; i < items.length; i++) {
                 this.items[i] = items[i].toString();
@@ -258,6 +255,7 @@ class BTreeGraphics {
 
         /**
          * Method that shifts the position of the graphic
+         *
          * @param x the x amount shifted
          * @param y the y amount shifted
          */
