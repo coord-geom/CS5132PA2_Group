@@ -224,9 +224,9 @@ public class BTreeGraphics {
     static class NodeGraphics {
 
         // Default constant values and settings
-        private final static double PADDING = 12;  // Starts from the raw string bounding box
+        private final static double PADDING = 16;  // Starts from the raw string bounding box
         private final static double ARC = 50;
-        private final static double ITEM_PADDING = 8;  // Starts from the raw string bounding box
+        private final static double ITEM_PADDING = 12;  // Starts from the raw string bounding box
 
         private final static double ITEM_ARC = 40;
         private final static double SPACING = 16;  // Spacing between items excluding padding

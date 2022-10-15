@@ -166,17 +166,25 @@ public class BTreeDisplay extends Canvas {
     /**
      * Adds an item into the B Tree using a string representation of the item.
      * @param itemStrRep the string representation of the item
+     * @return if the string input was valid or not
      */
-    public void addItem(String itemStrRep) {
+    public boolean addItem(String itemStrRep) {
+        if (!treeItemFactory.isValidString(itemStrRep))
+            return false;
         getTree().add(treeItemFactory.createItemFromString(itemStrRep));
+        return true;
     }
 
     /**
      * Removes an item from the B Tree using a string representation of the item.
      * @param itemStrRep the string representation of the item
+     * @return if the string input was valid or not
      */
-    public void deleteItem(String itemStrRep) {
+    public boolean deleteItem(String itemStrRep) {
+        if (!treeItemFactory.isValidString(itemStrRep))
+            return false;
         getTree().delete(treeItemFactory.createItemFromString(itemStrRep));
+        return true;
     }
 
     /**
@@ -197,6 +205,14 @@ public class BTreeDisplay extends Canvas {
     }
 
     /**
+     * Updates the graphics object and repaints the canvas
+     */
+    public void update() {
+        treeGraphics.update();
+        repaint();
+    }
+
+    /**
      * Moves the display to offset the graphics
      * @param xAmount change in the x direction
      * @param yAmount change in the y direction
@@ -213,6 +229,8 @@ public class BTreeDisplay extends Canvas {
      * @param yPos the x position where the scale is occurring relative to the canvas.
      */
     public void scaleDisplay(double multiplier, double xPos, double yPos) {
+        moveDisplay(-((-getXOffset() + xPos) - (-getXOffset() + xPos) * 1/multiplier),
+                -((-getYOffset() + yPos) - (-getYOffset() + yPos) * 1/multiplier));
         setScale(getScale() * multiplier);
     }
 

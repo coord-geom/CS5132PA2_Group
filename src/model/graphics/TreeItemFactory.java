@@ -16,6 +16,7 @@ public interface TreeItemFactory<T extends Comparable<? super T>> {
 
     /**
      * Create a value from a string input
+     *
      * @param str the string
      */
     T createItemFromString(String str);
@@ -27,5 +28,12 @@ public interface TreeItemFactory<T extends Comparable<? super T>> {
      * @return a new empty B Tree
      */
     BTree<?> createEmptyTree(int minChildren);
+
+    /**
+     * Checker method that returns whether the string is a valid string representation of the item to be created.
+     * @param str the String input
+     * @return a boolean that tells whether the string is valid.
+     */
+    boolean isValidString(String str);
 
 }

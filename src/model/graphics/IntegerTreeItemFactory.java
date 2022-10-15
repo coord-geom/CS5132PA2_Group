@@ -17,4 +17,14 @@ public class IntegerTreeItemFactory implements TreeItemFactory<Integer> {
         return new BTree<>(minChildren);
     }
 
+    @Override
+    public boolean isValidString(String str) {
+        try {
+            Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
 }
