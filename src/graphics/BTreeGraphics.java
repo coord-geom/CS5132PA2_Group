@@ -36,7 +36,8 @@ class BTreeGraphics {
      * @param treeItemFactory the factory used to create the empty tree and items
      */
     BTreeGraphics(TreeItemFactory<?> treeItemFactory) {
-        this(treeItemFactory, treeItemFactory.createEmptyTree(5));  // 5 is the default order of a B Tree
+        // 3 is the default minimum number of children of a B Tree
+        this(treeItemFactory, treeItemFactory.createEmptyTree(3));
     }
 
     /**

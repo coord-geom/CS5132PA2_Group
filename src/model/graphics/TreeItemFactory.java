@@ -18,10 +18,10 @@ public interface TreeItemFactory<T> {
     T createItemFromString(String str);
 
     /**
-     * Create an empty B Tree object with given order
-     * @param order the order of the B Tree
+     * Create an empty B Tree object with given minimum number of children
+     * @param minChildren the minimum number of children
      * @return a new empty B Tree
      */
-    BTree<T> createEmptyTree(int order);
+    BTree<T> createEmptyTree(int minChildren);
 
 }

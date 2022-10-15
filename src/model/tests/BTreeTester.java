@@ -8,16 +8,16 @@ public class BTreeTester {
         testBasicInsertion();
     }
     public static boolean testBasicInsertion() {
-        BTree<Integer> tree = new BTree<>(5);
-        tree.add(9, 2);
-        tree.add(0, 6);
-        tree.add(2, 1);
-        tree.add(3, 9);
-        tree.add(4, 14);
+        BTree<Integer> tree = new BTree<>(3);
+        tree.add(2, 2);
+        tree.add(6, 6);
+        tree.add(1, 1);
+        tree.add(9, 9);
+        tree.add(14, 14);
         tree.add(5, 5);
-        tree.add(6, 0);
-        tree.add(7, 50);
-        tree.add(8, -3);
+        tree.add(0, 0);
+        tree.add(50, 50);
+        tree.add(-3, -3);
         // tree.add(0, -78);
         // tree.add(10, 2);
         System.out.println(tree);
