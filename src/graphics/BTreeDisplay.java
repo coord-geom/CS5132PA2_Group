@@ -94,7 +94,7 @@ public class BTreeDisplay extends Canvas {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 super.mouseWheelMoved(e);
                 // Arbitrary constant
-                scaleDisplay(1 + e.getPreciseWheelRotation() * -0.2, e.getX(), e.getY());
+                scaleDisplay(Math.pow(1.13, -e.getPreciseWheelRotation()), e.getX(), e.getY());
                 repaint();
             }
             @Override
@@ -214,7 +214,6 @@ public class BTreeDisplay extends Canvas {
      */
     public void scaleDisplay(double multiplier, double xPos, double yPos) {
         setScale(getScale() * multiplier);
-        moveDisplay(xPos * getScale(), yPos * getScale());
     }
 
     /**
