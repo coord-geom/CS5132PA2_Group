@@ -31,6 +31,13 @@ public class BTreeGraphics {
     private ArrayList<NodeGraphics> nodeGraphics;
 
     /**
+     * Denotes whether each level should have its nodes displayed vertically instead of horizontally.
+     * Will display the graphics from left to right level-wise, with items going from top to down per level.
+     * Default is false
+     */
+    private boolean isVertical;
+
+    /**
      * Boolean to track whether an update has been made to the tree.
      */
     private boolean hasUpdate;
@@ -41,9 +48,19 @@ public class BTreeGraphics {
      * @param tree the B Tree.
      */
     public BTreeGraphics(BTree tree) {
+        this(tree,false);
+    }
+
+    /**
+     * Constructor with additional isVertical specifier
+     *
+     * @param tree the B Tree.
+     */
+    public BTreeGraphics(BTree tree, boolean isVertical) {
         this.tree = tree;
         this.nodeGraphics = new ArrayList<>();
-        this.hasUpdate = true;
+        setVertical(isVertical);
+        update();
     }
 
     /**
@@ -53,6 +70,23 @@ public class BTreeGraphics {
      */
     public BTree getTree() {
         return tree;
+    }
+
+    /**
+     * Getter for whether nodes within a level should be displayed vertically
+     *
+     * @return boolean value
+     */
+    public boolean isVertical() {
+        return isVertical;
+    }
+    /**
+     * Setter for whether nodes within a level should be displayed vertically
+     *
+     * @param vertical parameter
+     */
+    public void setVertical(boolean vertical) {
+        isVertical = vertical;
     }
 
     /**
@@ -164,38 +198,61 @@ public class BTreeGraphics {
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.updateDimensionsAndBounds(graphics);
 
-        // Separate vertically and calculate level length
+        // Separate level-wise and calculate level length
         ArrayList<Double> levelLength = new ArrayList<>();  // Tracks the length of each level.
-        double yOffset = 0;
+        double dimOffset = 0;
         for (int level = 0; level < levelsNodeGraphics.size(); level++) {
-            double maxHeight = 0;
+            double maxDim = 0;
             levelLength.add(0.);
 
             for (int i = 0; i < levelsNodeGraphics.get(level).size(); i++) {
-               NodeGraphics nodeGraphicsAtLevel = levelsNodeGraphics.get(level).get(i);
-                if (nodeGraphicsAtLevel.getHeight() > maxHeight)
-                    maxHeight = nodeGraphicsAtLevel.getHeight();
-                nodeGraphicsAtLevel.setPosY(yOffset);  // Sets new y position of the node graphic
+                NodeGraphics nodeGraphicsAtLevel = levelsNodeGraphics.get(level).get(i);
 
-                // increments the length of the level
-                double lengthIncrement = nodeGraphicsAtLevel.getWidth() + NodeGraphics.PADDING * 2;
+                // Check for possible new maximum dimension (depending on vertical/horizontal)
+                if (isVertical())
+                    if (nodeGraphicsAtLevel.getWidth() > maxDim)
+                        maxDim = nodeGraphicsAtLevel.getWidth();
+                else
+                    if (nodeGraphicsAtLevel.getHeight() > maxDim)
+                        maxDim = nodeGraphicsAtLevel.getHeight();
+
+                // Sets new level-wise position of the node graphic (depending on vertical/horizontal)
+                if (isVertical())
+                    nodeGraphicsAtLevel.setPosX(dimOffset);
+                else
+                    nodeGraphicsAtLevel.setPosY(dimOffset);
+
+                // increments the length of the level (depending on vertical/horizontal)
+                double lengthIncrement = 0;
+                if (isVertical)
+                    lengthIncrement = nodeGraphicsAtLevel.getHeight() + NodeGraphics.PADDING * 2;
+                else
+                    lengthIncrement = nodeGraphicsAtLevel.getWidth() + NodeGraphics.PADDING * 2;
                 if (i != 0)
                     lengthIncrement += SPACING_WITHIN_LEVELS;
                 levelLength.set(level, levelLength.get(level) + lengthIncrement);
             }
-            yOffset += maxHeight + SPACING_BETWEEN_LEVELS;
+            dimOffset += maxDim + SPACING_BETWEEN_LEVELS;
         }
 
-        // Separate horizontally
+        // Separate item-wise within levels
         double maxLength = Collections.max(levelLength);
         for (int level = 0; level < levelsNodeGraphics.size(); level++) {
-            double xOffset = (maxLength - levelLength.get(level)) / 2;  // starting offset
+            double levelDimOffset = (maxLength - levelLength.get(level)) / 2;  // starting offset
 
             for (int i = 0; i < levelsNodeGraphics.get(level).size(); i++) {
                 NodeGraphics nodeGraphicsAtLevel = levelsNodeGraphics.get(level).get(i);
-                nodeGraphicsAtLevel.setPosX(xOffset);
+                // set offset x/y (depending on vertical/horizontal)
+                if (isVertical)
+                    nodeGraphicsAtLevel.setPosY(levelDimOffset);
+                else
+                    nodeGraphicsAtLevel.setPosX(levelDimOffset);
                 // increment offset
-                xOffset += nodeGraphicsAtLevel.getWidth() + NodeGraphics.PADDING * 2 + SPACING_WITHIN_LEVELS;
+                levelDimOffset += NodeGraphics.PADDING * 2 + SPACING_WITHIN_LEVELS;
+                if (isVertical)
+                    levelDimOffset += nodeGraphicsAtLevel.getHeight();
+                else
+                    levelDimOffset += nodeGraphicsAtLevel.getWidth();
             }
         }
     }
@@ -305,7 +362,8 @@ public class BTreeGraphics {
          */
         void updateDimensionsAndBounds(Graphics graphics) {
             graphics.setFont(FONT);
-            itemBounds = BTreeDisplay.getStringBounds(items, graphics, SPACING + ITEM_PADDING * 2);
+            itemBounds = BTreeDisplay.getStringBounds(items, graphics,
+                    SPACING + ITEM_PADDING * 2, false);
 
             // Update dimensions
             dimensions[0] = 0;

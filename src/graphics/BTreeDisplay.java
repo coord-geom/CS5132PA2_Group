@@ -120,6 +120,13 @@ public class BTreeDisplay extends Canvas {
         System.out.println(Arrays.toString(this.getMouseListeners()));
     }
 
+    /**
+     * Setter to set the tree graphics to display nodes within a level vertically instead of horizontally.
+     * @param isVertical a boolean value
+     */
+    public void setVertical(boolean isVertical) {
+        treeGraphics.setVertical(true);
+    }
 
     /**
      * Getter for x offset
@@ -253,22 +260,29 @@ public class BTreeDisplay extends Canvas {
      * Rectangle2D values have an initial 0,0 position.
      * <br>
      * <b>The bounds of each string are also positioned to line up next to each other,
-     * as if the text were lined horizontally.</b>
+     * as if the text were lined horizontally or vertically (specifiable).</b>
      * @param textArray the array of text whose bounds are to be found
      * @param graphics the graphics instance
      * @param spacing the spacing in between each string bounds
+     * @param isVertical whether the text is lined vertically, if not, it will be lined horizontally
      * @return the bounds noted by a Rectangle2D object
      */
     static Rectangle2D[] getStringBounds(String[] textArray,
                                                  Graphics graphics,
-                                                 double spacing) {
+                                                 double spacing, boolean isVertical) {
         Rectangle2D[] boundsArray = new Rectangle2D[textArray.length];
-        double accumulatingX = 0;  // Removes the extra spacing for a total of (n-1) spacings
+        double accumulatingDim = 0;  // Removes the extra spacing for a total of (n-1) spacings
         Rectangle2D rect;
         for (int i = 0; i < textArray.length; i++) {
             rect = getStringBounds(textArray[i], graphics);
-            rect.setRect(accumulatingX, 0, rect.getWidth(), rect.getHeight());
-            accumulatingX += rect.getWidth() + spacing;
+            if (isVertical) {
+                rect.setRect(0, accumulatingDim, rect.getWidth(), rect.getHeight());
+                accumulatingDim += rect.getHeight() + spacing;
+            }
+            else {
+                rect.setRect(accumulatingDim, 0, rect.getWidth(), rect.getHeight());
+                accumulatingDim += rect.getWidth() + spacing;
+            }
             boundsArray[i] = rect;
         }
         return boundsArray;
