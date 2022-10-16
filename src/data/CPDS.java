@@ -1,5 +1,9 @@
 package data;
 
+import graphics.BTreeDisplay;
+import model.graphics.EntryTreeItemFactory;
+import model.graphics.IntegerTreeItemFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,6 +40,6 @@ public class CPDS {
             e.printStackTrace();
         }
 
-        System.out.println(Arrays.toString(entries));
+        new BTreeDisplay(new EntryTreeItemFactory());
     }
 }

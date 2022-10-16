@@ -2,6 +2,7 @@ package controller;
 
 import graphics.BTreeDisplay;
 import model.BTree;
+import model.graphics.EntryTreeItemFactory;
 import model.graphics.IntegerTreeItemFactory;
 
 import javax.swing.*;
@@ -98,11 +99,27 @@ public class Application extends JFrame {
         infoLabel.setMaximumSize(new Dimension(500,30));
         infoLabel.setFont(font);
 
+        String[] optionsToChoose = {"Custom", "Comparative Political Data Set"};
+        JComboBox<String> jComboBox = new JComboBox<>(optionsToChoose);
+        jComboBox.setMaximumSize(new Dimension(300,30));
+        jComboBox.addActionListener(e -> {
+            System.out.println("combo'd");
+            if (jComboBox.getSelectedIndex() == 0){
+                // default empty canvas for user
+                display = new BTreeDisplay(new IntegerTreeItemFactory());
+            } else if (jComboBox.getSelectedIndex() == 1) {
+                // initialise the CPDS dataset
+                EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
+                display = new BTreeDisplay(entryTreeItemFactory, entryTreeItemFactory.createFromFileTree(3, null));
+            }
+        });
+
         panel.add(textField);
         panel.add(buttonAdd);
         panel.add(buttonDel);
         panel.add(emptySpaceLabel);
         panel.add(label);
+        panel.add(jComboBox);
 
         display = new BTreeDisplay(new IntegerTreeItemFactory());
         rootPanel.add(display, BorderLayout.CENTER);

@@ -1,6 +1,6 @@
 package data;
 
-public class Entry {
+public class Entry implements Comparable<Entry> {
     public int year;
     public String country;
     public float gov_left1;
@@ -12,6 +12,11 @@ public class Entry {
 
     @Override
     public String toString(){
-        return "year: " + year + ", country: " + country + ", gov_left1: " + gov_left1;
+        return year + " " + country + "\n" + gov_left1;
+    }
+
+    @Override
+    public int compareTo(Entry o) {
+        return Float.compare(this.gov_left1, o.gov_left1);
     }
 }
