@@ -7,8 +7,8 @@ In this project, we have identified B-trees as a way to enable teachers to filte
 Hence, we have implemented the B-tree and created a GUI which allows the user to visualize what goes on inside a B-tree, together with a sample dataset.
 
 ### What should I do from here?
-BNode.java (extended from Node.java) and BTree.java contain the code for the B-tree. Testcases to verify its robustness are found in BTreeTester.java
+src/model/BNode.java (extended from Node.java) and src/model/BTree.java contain the code for the B-tree. Testcases to verify its robustness are found in BTreeTester.java
 
-To see a sample of how we could tackle the societal issue, go to EmailTester.java
+To see a sample of how we could tackle the societal issue, go to src/data/EmailTester.java
 
-To view the application we have created, download out/artifacts/CS5132PA2_Group_jar/CS5132PA2_Group.jar and execute the file.
+To view the application we have created, download CS5132PA2_Group.jar and execute the file.
