@@ -44,7 +44,11 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
         return binarySearch(item) != -1;
     }
 
-    // Remove an element from a node and also the left (0) or right (+1) child.
+    /**
+     * Remove an element from a node and also the left (0) or right (+1) child.
+     * @param index the index of the item to be removed
+     * @param leftOrRightChild to determine whether to remove the left or right child
+     */
     void remove(int index, int leftOrRightChild) {
         if (index >= 0) {
             int i;
@@ -67,6 +71,10 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
         }
     }
 
+    /**
+     * Shifts all the items to the right by one position,
+     * leaving a space at index 0 to add another item
+     */
     void shiftRightByOne() {
         if (!isLeaf) {
             neighbours[numItems + 1] = neighbours[numItems];
@@ -79,6 +87,11 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
         }
     }
 
+    /**
+     *
+     * @param item
+     * @return the index of the smallest item greater than item
+     */
     int subtreeRootNodeIndex(T item) {
         for (int i = 0; i < numItems; i++) {
             if (item.compareTo(items[i]) < 0) {
@@ -108,12 +121,12 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
         buffer.append(Arrays.asList(items));
         buffer.append('\n');
 
-        for (Node node : neighbours) {
+        for (BNode node : neighbours) {
             if (node != null) {
                 if (numItems != 0 && node != neighbours[numItems - 1]) {
-                    ((BNode<?>) node).print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
+                    node.print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
                 } else {
-                    ((BNode<?>) node).print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
+                    node.print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
                 }
             }
         }

@@ -8,21 +8,21 @@ public class BTTester {
         testBasicInsertion();
     }
     public static boolean testBasicInsertion() {
-        BTree<Character> tree = new BTree<>(4);
+        BTree<Integer> tree = new BTree<>(2);
 
         for(int i=0;i<=25;++i){
-            tree.add((char)('a'+i+26));
-            tree.add((char)('a'+i));
+            tree.add(i+26);
+            tree.add(i);
+            tree.add(i);
         }
 
         System.out.println(tree);
 
         for(int i=13;i<=38;++i){
-            tree.delete((char)('a'+i));
-            System.out.println(tree);
+            tree.delete(i);
         }
 
-
+        System.out.println(tree);
         return true;
     }
 }

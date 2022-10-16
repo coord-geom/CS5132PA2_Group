@@ -75,22 +75,18 @@ public class BTree<T extends Comparable<? super T>> {
 
     public void add(T item) {
         BNode rootNode = root;
-        if (!update(root, item)) {
-            if (rootNode.numItems == (2 * minChildren - 1)) {
-                BNode newRootNode = new BNode(2*minChildren);
-                root = newRootNode;
-                newRootNode.isLeaf = false;
-                root.neighbours[0] = rootNode;
-                splitChildNode(newRootNode, 0, rootNode); // Split rootNode and move its median (middle) item up into newRootNode.
-                insertIntoNonFullNode(newRootNode, item); // Insert the item into the B-Tree with root newRootNode.
-            } else {
-                insertIntoNonFullNode(rootNode, item); // Insert the item into the B-Tree with root rootNode.
-            }
+        if (rootNode.numItems == (2 * minChildren - 1)) {
+            BNode newRootNode = new BNode(2*minChildren);
+            root = newRootNode;
+            newRootNode.isLeaf = false;
+            root.neighbours[0] = rootNode;
+            splitChildNode(newRootNode, 0, rootNode); // Split rootNode and move its median (middle) item up into newRootNode.
+            insertIntoNonFullNode(newRootNode, item); // Insert the item into the B-Tree with root newRootNode.
+        } else {
+            insertIntoNonFullNode(rootNode, item); // Insert the item into the B-Tree with root rootNode.
         }
     }
 
-    // Split the node, node, of a B-Tree into two nodes that both contain T-1 elements and move node's median item up to the parentNode.
-    // This method will only be called if node is full; node is the i-th child of parentNode.
     /**
      * Splits a given child node and places the median child node (which moves up one level)
      * in the given parent node at a specified index i
@@ -110,27 +106,24 @@ public class BTree<T extends Comparable<? super T>> {
 
         // Copy half of child node into new node
         // -> [,a,b,c,d,e,] & [.d.e.]
-        for (int j = 0; j < minChildren - 1; j++) { // Copy the last minChildren-1 elements of node into newNode.
-            newNode.items[j] = node.items[j + minChildren];
-        }
+        // Copy the last minChildren-1 elements of node into newNode.
+        if (minChildren - 1 >= 0) System.arraycopy(node.items, minChildren, newNode.items, 0, minChildren - 1);
+
 
         // If the split nodes are inner nodes, copy over children as well.
         if (!newNode.isLeaf) {
             // -> [,a,b,c,d,e,] & [,d,e,]
-            for (int j = 0; j < minChildren; j++) { // Copy the last minChildren pointers of node into newNode.
-                newNode.neighbours[j] = node.neighbours[j + minChildren];
-            }
+            // Copy the last minChildren pointers of node into newNode.
+            if (minChildren >= 0) System.arraycopy(node.neighbours, minChildren, newNode.neighbours, 0, minChildren);
             // -> [,a,b,c.d.e.] & [,d,e,]
-            for (int j = minChildren; j <= node.numItems; j++) {
-                node.neighbours[j] = null;
-            }
+            for (int j = minChildren; j <= node.numItems; j++) node.neighbours[j] = null;
+
         }
 
         // Removes the duplicate data
         // -> [,a,b,c.] & [,d,e,]
-        for (int j = minChildren; j < node.numItems; j++) {
-            node.items[j] = null;
-        }
+        for (int j = minChildren; j < node.numItems; j++) node.items[j] = null;
+
         node.numItems = minChildren - 1;
 
         // Insert a (child) pointer to node newNode into the parentNode, moving other items and pointers as necessary.
@@ -138,13 +131,9 @@ public class BTree<T extends Comparable<? super T>> {
         //        [,A,-.B,]
         // ->       /
         //    [,a,b,c.] [,d,e,]
-        for (int j = parentNode.numItems; j >= i + 1; j--) {
-            parentNode.neighbours[j + 1] = parentNode.neighbours[j];
-        }
+        if (parentNode.numItems + 1 - (i + 1) >= 0) System.arraycopy(parentNode.neighbours, i + 1, parentNode.neighbours, i + 1 + 1, parentNode.numItems + 1 - (i + 1));
         parentNode.neighbours[i + 1] = newNode;
-        for (int j = parentNode.numItems - 1; j >= i; j--) {
-            parentNode.items[j + 1] = parentNode.items[j];
-        }
+        if (parentNode.numItems - i >= 0) System.arraycopy(parentNode.items, i, parentNode.items, i + 1, parentNode.numItems - i);
 
         // Adds new node and new item
         //       [,A,c,B,]
@@ -155,16 +144,16 @@ public class BTree<T extends Comparable<? super T>> {
         parentNode.numItems++;
     }
 
-    // Insert an element into a B-Tree. (The element will ultimately be inserted into a leaf node).
     /**
      * Inserts an item into a subtree given the subtree's root node
      * @param node the subtree's root node
-     * @param item
+     * @param item the item to be inserted
      */
     void insertIntoNonFullNode(BNode node, T item) {
         int i = node.numItems - 1;
         if (node.isLeaf) {
             // Since node is not a full node insert the new element into its proper place within node.
+            // [a, b, c, d, null] --> [a, b, X, c, d]
             while (i >= 0 && item.compareTo((T) node.items[i]) < 0) {
                 node.items[i + 1] = node.items[i];
                 i--;
@@ -204,26 +193,25 @@ public class BTree<T extends Comparable<? super T>> {
      *      If both have minChildren - 1 nodes,
      *          we will merge them and extract the median to delete
      * If the item is not in the node,
-     *      we find the smallest index of the item i larger than it
-     *      If the left child has more than minChildren items,
+     *      we find the smallest index of the item i larger than it,
+     *      and we restructure the nodes so that we can delete the item in one downward pass
      *
-     *
-     *
-     * @param node
-     * @param item
+     * @param node the current node we are checking
+     * @param item the item to delete
      */
     public void delete(BNode node, T item) {
-        if (node.isLeaf) { // 1. If the item is in node and node is a leaf node, then delete the item from node.
+        if (node.isLeaf) {
+            // [a, b, X, c, d] --> [a, b, c, d, null]
             int i;
-            if ((i = node.binarySearch(item)) != -1) { // item is i-th item of node if node contains item.
+            if ((i = node.binarySearch(item)) != -1) {
                 node.remove(i, LEFT_CHILD_NODE);
             }
         } else {
             int i;
-            if ((i = node.binarySearch(item)) != -1) { // 2. If node is an internal node and it contains the item... (item is i-th item of node if node contains item)
+            if ((i = node.binarySearch(item)) != -1) {
                 BNode leftChildNode = node.neighbours[i];
                 BNode rightChildNode = node.neighbours[i + 1];
-                if (leftChildNode.numItems >= minChildren) { // 2a. If the predecessor child node has at least T items...
+                if (leftChildNode.numItems >= minChildren) {
                     //  E.g. To remove 500, replace with predecessor 499
                     //       then find 499 to delete later
                     //    [1, 2, 500, ...]     -->   [1, 2, 499, ...]
@@ -234,14 +222,14 @@ public class BTree<T extends Comparable<? super T>> {
                     //               \                          \
                     //        [..., 499, null] -->       [..., null, null]
                     BNode predecessorNode = leftChildNode;
-                    BNode erasureNode = predecessorNode; // Make sure not to delete a item from a node with only T - 1 elements.
-                    while (!predecessorNode.isLeaf) { // Therefore only descend to the previous node (erasureNode) of the predecessor node and delete the item using 3.
+                    BNode erasureNode = predecessorNode;
+                    while (!predecessorNode.isLeaf) {
                         erasureNode = predecessorNode;
                         predecessorNode = predecessorNode.neighbours[predecessorNode.numItems];
                     }
                     node.items[i] = predecessorNode.items[predecessorNode.numItems - 1];
                     delete(erasureNode, (T) node.items[i]);
-                } else if (rightChildNode.numItems >= minChildren) { // 2b. If the successor child node has at least minChildren items...
+                } else if (rightChildNode.numItems >= minChildren) {
                     //  E.g. To remove 500, replace with successor 501
                     //       then find 501 to delete later
                     //    [1, 2, 500, ...]     -->   [1, 2, 501, ...]
@@ -252,82 +240,158 @@ public class BTree<T extends Comparable<? super T>> {
                     //            /                          /
                     //          [501, 502, ...] -->       [502, ...]
                     BNode successorNode = rightChildNode;
-                    BNode erasureNode = successorNode; // Make sure not to delete a item from a node with only minChildren - 1 elements.
-                    while (!successorNode.isLeaf) { // Therefore only descend to the previous node (erasureNode) of the predecessor node and delete the item using 3.
+                    BNode erasureNode = successorNode;
+                    while (!successorNode.isLeaf) {
                         erasureNode = successorNode;
                         successorNode = successorNode.neighbours[0];
                     }
                     node.items[i] = successorNode.items[0];
                     delete(erasureNode, (T) node.items[i]);
-                } else { // 2c. If both the predecessor and the successor child node have only minChildren - 1 items...
-                    // If both of the two child nodes to the left and right of the deleted element have the minimum number of elements,
-                    // namely minChildren - 1, they can then be joined into a single node with 2 * minChildren - 2 elements.
+                } else {
+                    // E.g.   [12, 30, 42, 55, 78] and minChildren = 2, item = 42
+                    //                /  \
+                    //               /    \
+                    //              /      \
+                    //  [33, 37, null...]  [44, 48, null, null, null]
+                    //
+                    //              becomes
+                    //
+                    //        [12, 30, 55, 78, null]
+                    //                   \
+                    //                    \
+                    //                     \
+                    //           * [33, 37, 42, 44, 48]
+                    //
+                    // then we run delete on * node...
+
                     int medianId = mergeNodes(leftChildNode, rightChildNode);
-                    moveitem(node, i, RIGHT_CHILD_NODE, leftChildNode, medianId); // Delete i's right child pointer from node.
+                    moveItem(node, i, RIGHT_CHILD_NODE, leftChildNode, medianId); // Delete i's right child pointer from node.
                     delete(leftChildNode, item);
                 }
-            } else { // 3. If the item is not resent in node, descent to the root of the appropriate subtree that must contain item...
-                // The method is structured to guarantee that whenever delete is called recursively on node "node", the number of items
-                // in node is at least the minimum degree minChildren. Note that this condition requires one more item than the minimum required
-                // by usual B-tree conditions. This strengthened condition allows us to delete a item from the tree in one downward pass
-                // without having to "back up".
+            } else {
                 i = node.subtreeRootNodeIndex(item);
                 BNode childNode = node.neighbours[i]; // childNode is i-th child of node.
                 if (childNode.numItems == minChildren - 1) {
                     BNode leftChildSibling = (i - 1 >= 0) ? node.neighbours[i - 1] : null;
                     BNode rightChildSibling = (i  + 1 <= node.numItems) ? node.neighbours[i + 1] : null;
-                    if (leftChildSibling != null && leftChildSibling.numItems >= minChildren) { // 3a. The left sibling has >= minChildren items...
-                        // Move a item from the subtree's root node down into childNode along with the appropriate child pointer.
-                        // Therefore, first shift all elements and children of childNode right by 1.
+                    if (leftChildSibling != null && leftChildSibling.numItems >= minChildren) {
+                        // E.g. To delete 51, i=3
+                        //
+                        //                   [30, 40, 50, 60, null]
+                        //                           /  \
+                        //                          /    \
+                        //    [45, 46, 47, 48, null]   [53, 56, null, null, null]
+                        //
+                        //          48 goes up, 50 goes down to neighbours[3]
+                        //                          becomes
+                        //
+                        //                   [30, 40, 48, 60, null]
+                        //                           /  \
+                        //                          /    \
+                        //    [45, 46, 47, null, null]   [50, 53, 56, null, null]
+                        //
+                        //                  then we search neighbours[3]
+                        //
                         childNode.shiftRightByOne();
-                        childNode.items[0] = node.items[i - 1]; // i - 1 is the item index in node that is smaller than childNode's smallest item.
-                        if (!childNode.isLeaf) {
+                        childNode.items[0] = node.items[i - 1];
+                        if (!childNode.isLeaf)
                             childNode.neighbours[0] = leftChildSibling.neighbours[leftChildSibling.numItems];
-                        }
-                        childNode.numItems++;
 
-                        // Move a item from the left sibling into the subtree's root node.
+                        childNode.numItems++;
                         node.items[i - 1] = leftChildSibling.items[leftChildSibling.numItems - 1];
-
-                        // Remove the item from the left sibling along with its right child node.
                         leftChildSibling.remove(leftChildSibling.numItems - 1, RIGHT_CHILD_NODE);
-                    } else if (rightChildSibling != null && rightChildSibling.numItems >= minChildren) { // 3a. The right sibling has >= minChildren items...
-                        // Move a item from the subtree's root node down into childNode along with the appropriate child pointer.
-                        childNode.items[childNode.numItems] = node.items[i]; // i is the item index in node that is bigger than childNode's biggest item.
-                        if (!childNode.isLeaf) {
+                    } else if (rightChildSibling != null && rightChildSibling.numItems >= minChildren) {
+                        // E.g. To delete 49, i=2
+                        //
+                        //                   [30, 40, 50, 60, null]
+                        //                           /  \
+                        //                          /    \
+                        //    [45, 48, null, null, null]   [53, 55, 57, 59, null]
+                        //
+                        //           53 goes up, 50 goes down to neighbours[2]
+                        //                          becomes
+                        //
+                        //                   [30, 40, 53, 60, null]
+                        //                           /  \
+                        //                          /    \
+                        //    [45, 48, 50, null, null]   [55, 57, 59, null, null]
+                        //
+                        //                  then we search neighbours[2]
+                        //
+                        childNode.items[childNode.numItems] = node.items[i];
+                        if (!childNode.isLeaf)
                             childNode.neighbours[childNode.numItems + 1] = rightChildSibling.neighbours[0];
-                        }
                         childNode.numItems++;
-
-                        // Move a item from the right sibling into the subtree's root node.
                         node.items[i] = rightChildSibling.items[0];
-
-                        // Remove the item from the right sibling along with its left child node.
                         rightChildSibling.remove(0, LEFT_CHILD_NODE);
-                    } else { // 3b. Both of childNode's siblings have only minChildren - 1 items each...
+                    } else {
                         if (leftChildSibling != null) {
+                            // E.g. To delete 51, i=3
+                            //
+                            //                   [30, 40, 50, 60, null]
+                            //                           /  \
+                            //                          /    \
+                            //  [45, 46, null, null, null]   [53, 56, null, null, null]
+                            //
+                            //          neighbours[2] merges into neighbours[3]
+                            //                          becomes
+                            //
+                            //                   [30, 40, 60, null]
+                            //                           \
+                            //                            \
+                            //                    * [45, 46, 50, 53, 56]
+                            //
+                            //          then we search * node (now neighbours[2])
+                            //
                             int medianId = mergeNodes(childNode, leftChildSibling);
-                            moveitem(node, i - 1, LEFT_CHILD_NODE, childNode, medianId); // i - 1 is the median item index in node when merging with the left sibling.
+                            moveItem(node, i - 1, LEFT_CHILD_NODE, childNode, medianId);
                         } else if (rightChildSibling != null) {
+                            // E.g. To delete 49, i=2
+                            //
+                            //                   [30, 40, 50, 60, null]
+                            //                           /  \
+                            //                          /    \
+                            //    [45, 48, null, null, null]   [53, 55, null, null, null]
+                            //
+                            //           neighbours[3] merges into neighbours[2]
+                            //                          becomes
+                            //
+                            //                   [30, 40, 60, null, null]
+                            //                           /
+                            //                          /
+                            //                  [45, 48, 50, 53, 55]
+                            //
+                            //                  then we search neighbours[2]
+                            //
                             int medianId = mergeNodes(childNode, rightChildSibling);
-                            moveitem(node, i, RIGHT_CHILD_NODE, childNode, medianId); // i is the median item index in node when merging with the right sibling.
+                            moveItem(node, i, RIGHT_CHILD_NODE, childNode, medianId);
                         }
                     }
                 }
+                // If merging is not an option, just keep looking downwards
                 delete(childNode, item);
             }
         }
     }
 
-    // Merge two nodes and keep the median item (element) empty.
+    /**
+     * This function merges two nodes to save space,
+     * note that they have the same number of elements
+     *
+     * @param target the node to be merged into
+     * @param source the node to transfer items from
+     * @return the median index which is left empty for later
+     */
     int mergeNodes(BNode target, BNode source) {
         int medianId;
         if (source.items[0].compareTo(target.items[target.numItems - 1]) < 0) {
+            // E.g. source: [1, 2, null, null, null]
+            //      target: [4, 5, null, null, null]
             int i;
-            // Shift all elements of target right by source.numItems + 1 to make place for the source and the median item.
             if (!target.isLeaf) {
                 target.neighbours[source.numItems + target.numItems + 1] = target.neighbours[target.numItems];
             }
+            // then target: [4, 5, null, 4, 5]
             for (i = target.numItems; i > 0 ; i--) {
                 target.items[source.numItems + i] = target.items[i - 1];
                 if (!target.isLeaf) {
@@ -335,11 +399,10 @@ public class BTree<T extends Comparable<? super T>> {
                 }
             }
 
-            // Clear the median item (element).
             medianId = source.numItems;
             target.items[medianId] = null;
 
-            // Copy the source's elements into target.
+            // then target: [1, 2, null, 4, 5]
             for (i = 0; i < source.numItems; i++) {
                 target.items[i] = source.items[i];
                 if (!source.isLeaf) {
@@ -350,11 +413,13 @@ public class BTree<T extends Comparable<? super T>> {
                 target.neighbours[i] = source.neighbours[i];
             }
         } else {
-            // Clear the median item (element).
+            // E.g. source: [4, 5, null, null, null]
+            //      target: [1, 2, null, null, null]
+
             medianId = target.numItems;
             target.items[medianId] = null;
 
-            // Copy the source's elements into target.
+            // then target: [1, 2, null, 4, 5]
             int offset = medianId + 1;
             int i;
             for (i = 0; i < source.numItems; i++) {
@@ -371,8 +436,16 @@ public class BTree<T extends Comparable<? super T>> {
         return medianId;
     }
 
-    // Move the item from source at index into target at medianId. Note that the element at index is already empty.
-    void moveitem(BNode source, int srcitemIndex, int childIndex, BNode target, int medianId) {
+    /**
+     * Moves an item from source (parent node) to the median index of target (child node) which is empty
+     *
+     * @param source the parent node
+     * @param srcitemIndex the index of the item to insert into target
+     * @param childIndex the index of the child node
+     * @param target the child node
+     * @param medianId the median index for the item to be inserted to
+     */
+    void moveItem(BNode source, int srcitemIndex, int childIndex, BNode target, int medianId) {
         target.items[medianId] = source.items[srcitemIndex];
         target.numItems++;
 
