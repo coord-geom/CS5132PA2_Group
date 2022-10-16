@@ -2,29 +2,6 @@ package model;
 
 import java.util.ArrayList;
 
-/*
- * Unlike a binary search tree, each node of a B-tree may have a variable number of items and children.
- * The items are stored in non-decreasing order. Each node either is a leaf node or
- * it has some associated children that are the root nodes of subtrees.
- * The left child node of a node's element contains all nodes (elements) with items less than or equal to the node element's item
- * but greater than the preceding node element's item.
- * If a node becomes full, a split operation is performed during the insert operation.
- * The split operation transforms a full node with 2*T-1 elements into two nodes with T-1 elements each
- * and moves the median item of the two nodes into its parent node.
- * The elements left of the median (middle) element of the splitted node remain in the original node.
- * The new node becomes the child node immediately to the right of the median element that was moved to the parent node.
- *
- * Example (T = 4):
- * 1.  R = | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
- *
- * 2.  Add item 8
- *
- * 3.  R =         | 4 |
- *                 /   \
- *     | 1 | 2 | 3 |   | 5 | 6 | 7 | 8 |
- *
- */
-
 /**
  * Implementation of a B Tree
  * <br>
@@ -227,7 +204,7 @@ public class BTree<T extends Comparable<? super T>> {
                         erasureNode = predecessorNode;
                         predecessorNode = predecessorNode.neighbours[predecessorNode.numItems];
                     }
-                    node.items[i] = predecessorNode.items[predecessorNode.numItems - 1];
+                    if(predecessorNode.numItems > 0) node.items[i] = predecessorNode.items[predecessorNode.numItems - 1];
                     delete(erasureNode, (T) node.items[i]);
                 } else if (rightChildNode.numItems >= minChildren) {
                     //  E.g. To remove 500, replace with successor 501
@@ -384,8 +361,8 @@ public class BTree<T extends Comparable<? super T>> {
      */
     int mergeNodes(BNode target, BNode source) {
         int medianId;
-        if (source.items[0].compareTo(target.items[target.numItems - 1]) < 0) {
-            // E.g. source: [1, 2, null, null, null]
+        if (target.numItems > 0 && source.items[0] != null && target.items[target.numItems - 1] != null && source.items[0].compareTo(target.items[target.numItems - 1]) < 0) {
+            //   E.g. source: [1, 2, null, null, null]
             //      target: [4, 5, null, null, null]
             int i;
             if (!target.isLeaf) {
@@ -554,17 +531,17 @@ public class BTree<T extends Comparable<? super T>> {
         return root.toString();
     }
 
-    void validate() throws Exception {
+    public void validate() throws Exception {
         ArrayList<T> array = getItems(root);
         for (int i = 0; i < array.size() - 1; i++) {
-            if (array.get(i).compareTo(array.get(i + 1)) >= 0) {
+            if (array.get(i).compareTo(array.get(i + 1)) > 0) {
                 throw new Exception("B-Tree invalid: " + array.get(i)  + " greater than " + array.get(i + 1));
             }
         }
     }
 
     // Inorder walk over the tree.
-    ArrayList<T> getItems(BNode node) {
+    public ArrayList<T> getItems(BNode node) {
         ArrayList<T> array = new ArrayList<>();
         if (node != null) {
             if (node.isLeaf) {

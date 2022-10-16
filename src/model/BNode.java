@@ -15,11 +15,12 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
     }
 
     int binarySearch(T item) {
+        if(item == null) return -1;
         int leftIndex = 0;
         int rightIndex = numItems - 1;
-
         while (leftIndex <= rightIndex) {
             final int middleIndex = leftIndex + ((rightIndex - leftIndex) / 2);
+            if(items[middleIndex] == null) return -1;
             if (items[middleIndex].compareTo(item) < 0) {
                 leftIndex = middleIndex + 1;
             } else if (items[middleIndex].compareTo(item) > 0) {
@@ -33,7 +34,7 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
     }
 
     /**
-     * Returns whether a item exists in the node.
+     * Returns whether an item exists in the node.
      * Uses binary search
      *
      * @param item the item to be searched
@@ -93,8 +94,10 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
      * @return the index of the smallest item greater than item
      */
     int subtreeRootNodeIndex(T item) {
+        if(item == null) return 0;
         for (int i = 0; i < numItems; i++) {
-            if (item.compareTo(items[i]) < 0) {
+            if(items[i] == null) return i;
+            if (item.compareTo(items[i]) <= 0) {
                 return i;
             }
         }

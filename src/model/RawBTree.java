@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 
 public class RawBTree {
-    private static final int T = 4;
+    private static final int T = 3;
     private Node mRootNode;
     private static final int LEFT_CHILD_NODE = 0;
     private static final int RIGHT_CHILD_NODE = 1;
