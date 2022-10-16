@@ -103,7 +103,8 @@ public class Application extends JFrame {
         JComboBox<String> jComboBox = new JComboBox<>(optionsToChoose);
         jComboBox.setMaximumSize(new Dimension(300,30));
         jComboBox.addActionListener(e -> {
-            System.out.println("combo'd");
+            // remove previous display
+            rootPanel.remove(display);
             if (jComboBox.getSelectedIndex() == 0){
                 // default empty canvas for user
                 display = new BTreeDisplay(new IntegerTreeItemFactory());
@@ -112,6 +113,10 @@ public class Application extends JFrame {
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
                 display = new BTreeDisplay(entryTreeItemFactory, entryTreeItemFactory.createFromFileTree(3, null));
             }
+            // add new display and revalidate the panel to see changes to gui
+            rootPanel.add(display);
+            rootPanel.revalidate();
+            rootPanel.repaint();
         });
 
         panel.add(textField);
