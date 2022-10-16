@@ -11,8 +11,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileFilter;
-import java.util.Optional;
 
 /**
  * Simple Java Swing Application
@@ -20,8 +18,6 @@ import java.util.Optional;
 public class Application extends JFrame {
 
     private BTreeDisplay display;
-    private TextField textField;
-    private Label label;
 
     public Application() {
         super("B Tree Application");
@@ -29,10 +25,15 @@ public class Application extends JFrame {
 
         Font font = new Font("Courier New", Font.BOLD, 14);
 
-        JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        panel.setSize(0, 200);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        JPanel topPanel = new JPanel();
+        topPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        topPanel.setSize(0, 200);
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+
+        JPanel bottomPanel = new JPanel();
+        topPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        topPanel.setSize(0, 200);
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
 
         TextField textField = new TextField();
         Button buttonAdd = new Button("Add Item");
@@ -41,6 +42,8 @@ public class Application extends JFrame {
         Label emptySpaceLabel = new Label("   ");
         Label infoLabel = new Label(
                 "Add/Remove nodes using the text field and buttons, click and drag to look around");
+        Checkbox vertCheckbox = new Checkbox("Show Nodes Vertically");
+        Checkbox itemVertCheckbox = new Checkbox("Show Items Vertically");
 
         textField.setMinimumSize(new Dimension(400, 50));
         textField.setFont(font);
@@ -131,6 +134,8 @@ public class Application extends JFrame {
                 // default empty canvas for user
                 display = new BTreeDisplay(new IntegerTreeItemFactory());
                 display.center();
+                vertCheckbox.setState(false);
+                itemVertCheckbox.setState(false);
             } else if (jComboBox.getSelectedIndex() == 2) {
                 // initialise the CPDS dataset
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
@@ -138,6 +143,8 @@ public class Application extends JFrame {
                         entryTreeItemFactory.createFromFileTree(3, null));
                 display.setVertical(true);
                 display.setItemVertical(true);
+                vertCheckbox.setState(true);
+                itemVertCheckbox.setState(true);
                 display.center();
             } else if (jComboBox.getSelectedIndex() == 1) {
                 // default empty canvas for user
@@ -148,6 +155,8 @@ public class Application extends JFrame {
                 display = new BTreeDisplay(factory,
                         factory.createTreeFromFile(optionsToChoose[jComboBox.getSelectedIndex()]));
                 display.center();
+                vertCheckbox.setState(false);
+                itemVertCheckbox.setState(false);
             }
             // add new display and revalidate the panel to see changes to gui
             rootPanel.add(display, BorderLayout.CENTER);
@@ -155,18 +164,42 @@ public class Application extends JFrame {
             rootPanel.repaint();
         });
 
-        panel.add(textField);
-        panel.add(buttonAdd);
-        panel.add(buttonDel);
-        panel.add(emptySpaceLabel);
-        panel.add(label);
-        panel.add(jComboBox);
+        vertCheckbox.addItemListener(e -> {
+            rootPanel.remove(display);
+            display.setVertical(e.getStateChange() == ItemEvent.SELECTED);
+            display.update();
+            display.center();
+            rootPanel.add(display, BorderLayout.CENTER);
+            rootPanel.revalidate();
+            rootPanel.repaint();
+        });
+
+        itemVertCheckbox.addItemListener(e -> {
+            rootPanel.remove(display);
+            display.setItemVertical(e.getStateChange() == ItemEvent.SELECTED);
+            display.update();
+            display.center();
+            rootPanel.add(display, BorderLayout.CENTER);
+            rootPanel.revalidate();
+            rootPanel.repaint();
+        });
+
+        topPanel.add(textField);
+        topPanel.add(buttonAdd);
+        topPanel.add(buttonDel);
+        topPanel.add(emptySpaceLabel);
+        topPanel.add(label);
+        topPanel.add(jComboBox);
+
+        bottomPanel.add(infoLabel);
+        bottomPanel.add(vertCheckbox);
+        bottomPanel.add(itemVertCheckbox);
 
         display = new BTreeDisplay(new IntegerTreeItemFactory());
         display.center();
+        rootPanel.add(topPanel, BorderLayout.PAGE_START);
         rootPanel.add(display, BorderLayout.CENTER);
-        rootPanel.add(panel, BorderLayout.PAGE_START);
-        rootPanel.add(infoLabel, BorderLayout.PAGE_END);
+        rootPanel.add(bottomPanel, BorderLayout.PAGE_END);
 
         add(rootPanel, BorderLayout.CENTER);
         setSize(1000, 600);

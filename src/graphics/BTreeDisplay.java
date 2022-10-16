@@ -244,7 +244,6 @@ public class BTreeDisplay extends Canvas {
             moveDisplay(getWidth()/2., getHeight()/2.);
             this.willCenter = false;
         }
-
     }
 
     /**
