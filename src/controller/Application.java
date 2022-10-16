@@ -112,8 +112,10 @@ public class Application extends JFrame {
                 // initialise the CPDS dataset
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
                 display = new BTreeDisplay(entryTreeItemFactory,
-                        entryTreeItemFactory.createFromFileTree(20, null));
+                        entryTreeItemFactory.createFromFileTree(3, null));
+                display.setVertical(true);
                 display.setItemVertical(true);
+                display.center();
             }
             // add new display and revalidate the panel to see changes to gui
             rootPanel.add(display, BorderLayout.CENTER);

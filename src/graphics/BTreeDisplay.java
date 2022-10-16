@@ -41,9 +41,23 @@ public class BTreeDisplay extends Canvas {
      */
     private double scale;
 
+    /**
+     * Tracks the previous mouse x coordinate
+     */
     private double prevMouseX;
+    /**
+     * Tracks the previous mouse y coordinate
+     */
     private double prevMouseY;
+    /**
+     * Tracks whether the left mouse button is pressed
+     */
     private boolean isLeftPressed;
+
+    /**
+     * Boolean to record if a center to the root node of the tree is needed on next paint() call
+     */
+    private boolean willCenter;
 
     /**
      * Constructor with factory input.
@@ -66,6 +80,7 @@ public class BTreeDisplay extends Canvas {
         this.xOffset = 0;
         this.yOffset = 0;
         this.scale = 1;
+        this.willCenter = false;
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {super.mouseClicked(e);}
@@ -216,8 +231,20 @@ public class BTreeDisplay extends Canvas {
         Graphics2D graphics2D = (Graphics2D) graphics;
         graphics2D.translate(getXOffset(), getYOffset());
         graphics2D.scale(getScale(), getScale());
+
         setBackground(Color.WHITE);
         treeGraphics.draw(graphics);
+
+        // Centers at the root if necessary
+        if (this.willCenter) {
+            double[] center = treeGraphics.getRootNodePos();
+            resetTransforms();
+            setXOffset(-center[0]);
+            setYOffset(-center[1]);
+            moveDisplay(getWidth()/2., getHeight()/2.);
+            this.willCenter = false;
+        }
+
     }
 
     /**
@@ -226,6 +253,13 @@ public class BTreeDisplay extends Canvas {
     public void update() {
         treeGraphics.update();
         repaint();
+    }
+
+    /**
+     * Centers the canvas at the root node
+     */
+    public void center() {
+        willCenter = true;
     }
 
     /**
@@ -250,6 +284,15 @@ public class BTreeDisplay extends Canvas {
         moveDisplay(xPos - xPos * multiplier,
                 yPos - yPos * multiplier);
         setScale(getScale() * multiplier);
+    }
+
+    /**
+     * Resets the scale and offsets of the canvas.
+     */
+    public void resetTransforms() {
+        setXOffset(0);
+        setYOffset(0);
+        setScale(1);
     }
 
     /**

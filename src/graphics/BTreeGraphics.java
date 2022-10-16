@@ -82,6 +82,19 @@ public class BTreeGraphics {
     }
 
     /**
+     * Gets the position of the root node.
+     * Returns (0, 0) if root does not exist
+     *
+     * @return A double array of two coordinate values, (x, y)
+     */
+    public double[] getRootNodePos() {
+        // Based on implementation, root node should be the first element.
+        if (nodeGraphics.size() == 0)
+            return new double[]{0, 0};
+        return new  double[]{nodeGraphics.get(0).getPosX(), nodeGraphics.get(0).getPosY()};
+    }
+
+    /**
      * Getter for whether nodes within a level should be displayed vertically
      *
      * @return boolean value
@@ -119,6 +132,7 @@ public class BTreeGraphics {
 
     /**
      * Must be called when an update is made to the tree to update the NodeGraphics ArrayList.
+     * This is to update the node graphics.
      */
     public void update() {
         hasUpdate = true;
@@ -130,7 +144,7 @@ public class BTreeGraphics {
      *
      * @param graphics the graphics instance needed to calculate values
      */
-    private void updateNodeGraphics(Graphics graphics) {
+    void updateNodeGraphics(Graphics graphics) {
         // Step 1:
         // Iterate level-order through the tree using breadth-first iteration
         // Tracks down nodes as well as their children.
