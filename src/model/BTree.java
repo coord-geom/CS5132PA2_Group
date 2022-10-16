@@ -459,7 +459,7 @@ public class BTree<T extends Comparable<? super T>> {
             return (T) node.items[i];
         }
         if (node.isLeaf) {
-            return null;
+            return (T) node.items[i];
         } else {
             return search(node.neighbours[i], item);
         }
