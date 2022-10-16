@@ -111,7 +111,7 @@ public class Application extends JFrame {
             } else if (jComboBox.getSelectedIndex() == 1) {
                 // initialise the CPDS dataset
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
-                display = new BTreeDisplay(entryTreeItemFactory, entryTreeItemFactory.createFromFileTree(3, null));
+                display = new BTreeDisplay(entryTreeItemFactory, entryTreeItemFactory.createFromFileTree(20, null));
             }
             // add new display and revalidate the panel to see changes to gui
             rootPanel.add(display);

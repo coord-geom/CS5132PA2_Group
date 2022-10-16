@@ -16,7 +16,7 @@ import java.util.Collections;
 public class BTreeGraphics {
 
     // Default constant values and settings
-    private final static double SPACING_BETWEEN_LEVELS = 72;
+    private final static double SPACING_BETWEEN_LEVELS = 300;
 
     private final static double SPACING_WITHIN_LEVELS = 20;
 
