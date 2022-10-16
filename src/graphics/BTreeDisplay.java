@@ -227,11 +227,13 @@ public class BTreeDisplay extends Canvas {
      * Scales the zoom to change the display size of the graphics
      * @param multiplier the multiplier to be applied to the scale
      * @param xPos the x position where the scale is occurring relative to the canvas.
-     * @param yPos the x position where the scale is occurring relative to the canvas.
+     * @param yPos the y position where the scale is occurring relative to the canvas.
      */
     public void scaleDisplay(double multiplier, double xPos, double yPos) {
-        moveDisplay(-((-getXOffset() + xPos) - (-getXOffset() + xPos) * 1/multiplier),
-                -((-getYOffset() + yPos) - (-getYOffset() + yPos) * 1/multiplier));
+        setXOffset(getXOffset() * multiplier);
+        setYOffset(getYOffset() * multiplier);
+        moveDisplay(xPos - xPos * multiplier,
+                yPos - yPos * multiplier);
         setScale(getScale() * multiplier);
     }
 
