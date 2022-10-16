@@ -6,6 +6,7 @@ import model.BTree;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Factory class that creates items and B Trees
@@ -40,7 +41,7 @@ public class EntryTreeItemFactory implements TreeItemFactory<Entry> {
 
     public BTree<Entry> createFromFileTree(int minChildren, String filename){
         // mainly intended to instantiate a tree based on CPDS dataset
-        if (filename == null) filename = "src/data/CPDS_1960-2019_Update_2021.csv";
+        if (filename == null) filename = "data/CPDS_1960-2019_Update_2021.csv";
 
         BTree<Entry> tree = createEmptyTree(minChildren);
 
@@ -48,7 +49,9 @@ public class EntryTreeItemFactory implements TreeItemFactory<Entry> {
         String splitBy = ",";
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
+            System.out.println(getClass().getClassLoader().getResourceAsStream(filename));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(getClass().getClassLoader().getResourceAsStream(filename)));
             // read headers
             br.readLine();
             int i = 0;
