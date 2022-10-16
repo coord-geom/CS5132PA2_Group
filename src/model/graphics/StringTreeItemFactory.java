@@ -19,7 +19,7 @@ public class StringTreeItemFactory implements TreeItemFactory<String> {
 
     @Override
     public boolean isValidString(String str) {
-        return true;
+        return !str.equals("");
     }
 
     /**
