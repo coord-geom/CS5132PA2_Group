@@ -40,7 +40,7 @@ public class EntryTreeItemFactory implements TreeItemFactory<Entry> {
 
     public BTree<Entry> createFromFileTree(int minChildren, String filename){
         // mainly intended to instantiate a tree based on CPDS dataset
-        if (filename == null) filename ="src/data/CPDS_1960-2019_Update_2021.csv";
+        if (filename == null) filename = "src/data/CPDS_1960-2019_Update_2021.csv";
 
         BTree<Entry> tree = createEmptyTree(minChildren);
 

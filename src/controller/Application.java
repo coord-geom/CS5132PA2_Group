@@ -9,6 +9,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Optional;
 
 /**
  * Simple Java Swing Application
@@ -99,7 +102,24 @@ public class Application extends JFrame {
         infoLabel.setMaximumSize(new Dimension(500,30));
         infoLabel.setFont(font);
 
-        String[] optionsToChoose = {"Custom", "Comparative Political Data Set"};
+        // Check for txt/csv files to read
+        File file = new File(".");
+        File[] readableFiles = file.listFiles(pathname -> {
+            if (!pathname.getName().contains("."))
+                return false;
+            String[] d = pathname.getName().split("\\.");
+            String extension = d[d.length - 1];
+            return (extension.equals("csv") || extension.equals("txt"));
+        });
+
+        // Initialise ComboBox
+        assert readableFiles != null;
+        String[] optionsToChoose = new String[2 + readableFiles.length];
+        optionsToChoose[0] = "Custom";
+        optionsToChoose[1] = "Comparative Political Data Set";
+        for (int i = 0; i < readableFiles.length; i++) {
+            optionsToChoose[i + 2] = readableFiles[i].getName();
+        }
         JComboBox<String> jComboBox = new JComboBox<>(optionsToChoose);
         jComboBox.setMaximumSize(new Dimension(300,30));
         jComboBox.addActionListener(e -> {
@@ -108,6 +128,7 @@ public class Application extends JFrame {
             if (jComboBox.getSelectedIndex() == 0){
                 // default empty canvas for user
                 display = new BTreeDisplay(new IntegerTreeItemFactory());
+                display.center();
             } else if (jComboBox.getSelectedIndex() == 1) {
                 // initialise the CPDS dataset
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
@@ -115,6 +136,11 @@ public class Application extends JFrame {
                         entryTreeItemFactory.createFromFileTree(3, null));
                 display.setVertical(true);
                 display.setItemVertical(true);
+                display.center();
+            } else {
+                IntegerTreeItemFactory factory = new IntegerTreeItemFactory();
+                display = new BTreeDisplay(factory,
+                        factory.createTreeFromFile(optionsToChoose[jComboBox.getSelectedIndex()]));
                 display.center();
             }
             // add new display and revalidate the panel to see changes to gui
@@ -131,6 +157,7 @@ public class Application extends JFrame {
         panel.add(jComboBox);
 
         display = new BTreeDisplay(new IntegerTreeItemFactory());
+        display.center();
         rootPanel.add(display, BorderLayout.CENTER);
         rootPanel.add(panel, BorderLayout.PAGE_START);
         rootPanel.add(infoLabel, BorderLayout.PAGE_END);
