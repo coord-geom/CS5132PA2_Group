@@ -8,11 +8,10 @@ public class BTTester {
         testBasicInsertion();
     }
     public static boolean testBasicInsertion() {
-        BTree<Integer> tree = new BTree<>(2);
+        BTree<Integer> tree = new BTree<>(3);
 
         for(int i=0;i<=25;++i){
             tree.add(i+26);
-            tree.add(i);
             tree.add(i);
         }
 

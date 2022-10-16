@@ -123,7 +123,7 @@ public class BNode<T extends Comparable<? super T>> extends Node<T>{
 
         for (BNode node : neighbours) {
             if (node != null) {
-                if (numItems != 0 && node != neighbours[numItems - 1]) {
+                if (numItems != 0 && node != neighbours[numItems]) {
                     node.print(buffer, childrenPrefix + "+--- ", childrenPrefix + "|   ");
                 } else {
                     node.print(buffer, childrenPrefix + "L___ ", childrenPrefix + "    ");
