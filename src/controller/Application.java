@@ -4,6 +4,7 @@ import graphics.BTreeDisplay;
 import model.BTree;
 import model.graphics.EntryTreeItemFactory;
 import model.graphics.IntegerTreeItemFactory;
+import model.graphics.StringTreeItemFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,7 +42,7 @@ public class Application extends JFrame {
         Label infoLabel = new Label(
                 "Add/Remove nodes using the text field and buttons, click and drag to look around");
 
-        textField.setMinimumSize(new Dimension(500, 50));
+        textField.setMinimumSize(new Dimension(400, 50));
         textField.setFont(font);
         textField.setText("Input Here");
         textField.addFocusListener(new FocusListener() {
@@ -114,11 +115,12 @@ public class Application extends JFrame {
 
         // Initialise ComboBox
         assert readableFiles != null;
-        String[] optionsToChoose = new String[2 + readableFiles.length];
-        optionsToChoose[0] = "Custom";
-        optionsToChoose[1] = "Comparative Political Data Set";
+        String[] optionsToChoose = new String[3 + readableFiles.length];
+        optionsToChoose[0] = "Custom Integer B Tree";
+        optionsToChoose[1] = "Custom String B Tree";
+        optionsToChoose[2] = "Comparative Political Data Set";
         for (int i = 0; i < readableFiles.length; i++) {
-            optionsToChoose[i + 2] = readableFiles[i].getName();
+            optionsToChoose[i + 3] = readableFiles[i].getName();
         }
         JComboBox<String> jComboBox = new JComboBox<>(optionsToChoose);
         jComboBox.setMaximumSize(new Dimension(300,30));
@@ -129,7 +131,7 @@ public class Application extends JFrame {
                 // default empty canvas for user
                 display = new BTreeDisplay(new IntegerTreeItemFactory());
                 display.center();
-            } else if (jComboBox.getSelectedIndex() == 1) {
+            } else if (jComboBox.getSelectedIndex() == 2) {
                 // initialise the CPDS dataset
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
                 display = new BTreeDisplay(entryTreeItemFactory,
@@ -137,8 +139,12 @@ public class Application extends JFrame {
                 display.setVertical(true);
                 display.setItemVertical(true);
                 display.center();
+            } else if (jComboBox.getSelectedIndex() == 1) {
+                // default empty canvas for user
+                display = new BTreeDisplay(new StringTreeItemFactory());
+                display.center();
             } else {
-                IntegerTreeItemFactory factory = new IntegerTreeItemFactory();
+                StringTreeItemFactory factory = new StringTreeItemFactory();
                 display = new BTreeDisplay(factory,
                         factory.createTreeFromFile(optionsToChoose[jComboBox.getSelectedIndex()]));
                 display.center();
