@@ -125,7 +125,15 @@ public class BTreeDisplay extends Canvas {
      * @param isVertical a boolean value
      */
     public void setVertical(boolean isVertical) {
-        treeGraphics.setVertical(true);
+        treeGraphics.setVertical(isVertical);
+    }
+
+    /**
+     * Setter to set the tree graphics nodes to display items within a node vertically instead of horizontally.
+     * @param isVertical a boolean value
+     */
+    public void setItemVertical(boolean isVertical) {
+        treeGraphics.setItemVertical(isVertical);
     }
 
     /**

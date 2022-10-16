@@ -38,6 +38,12 @@ public class BTreeGraphics {
     private boolean isVertical;
 
     /**
+     * Denotes whether each node should have its items displayed vertically instead of horizontally.
+     * Default is false
+     */
+    private boolean isItemVertical;
+
+    /**
      * Boolean to track whether an update has been made to the tree.
      */
     private boolean hasUpdate;
@@ -48,18 +54,21 @@ public class BTreeGraphics {
      * @param tree the B Tree.
      */
     public BTreeGraphics(BTree tree) {
-        this(tree,false);
+        this(tree, false, false);
     }
 
     /**
      * Constructor with additional isVertical specifier
      *
-     * @param tree the B Tree.
+     * @param tree           the B Tree.
+     * @param isVertical     boolean parameter
+     * @param isItemVertical boolean parameter
      */
-    public BTreeGraphics(BTree tree, boolean isVertical) {
+    public BTreeGraphics(BTree tree, boolean isVertical, boolean isItemVertical) {
         this.tree = tree;
         this.nodeGraphics = new ArrayList<>();
         setVertical(isVertical);
+        setItemVertical(isItemVertical);
         update();
     }
 
@@ -80,13 +89,32 @@ public class BTreeGraphics {
     public boolean isVertical() {
         return isVertical;
     }
+
     /**
      * Setter for whether nodes within a level should be displayed vertically
      *
-     * @param vertical parameter
+     * @param isVertical parameter
      */
-    public void setVertical(boolean vertical) {
-        isVertical = vertical;
+    public void setVertical(boolean isVertical) {
+        this.isVertical = isVertical;
+    }
+
+    /**
+     * Getter for whether items within a node should be displayed vertically
+     *
+     * @return boolean value
+     */
+    public boolean isItemVertical() {
+        return isItemVertical;
+    }
+
+    /**
+     * Setter for whether items within a node should be displayed vertically
+     *
+     * @param isItemVertical parameter
+     */
+    public void setItemVertical(boolean isItemVertical) {
+        this.isItemVertical = isItemVertical;
     }
 
     /**
@@ -149,7 +177,7 @@ public class BTreeGraphics {
 
             // If the node is not a leaf, add more iterable child nodes and relevant data
             if (!currNode.isLeaf) {
-                for (Node<?> node: currNode.neighbours) {
+                for (Node<?> node : currNode.neighbours) {
                     if (node == null)
                         break;
                     nodesIterationStack.add((BNode) node);
@@ -185,7 +213,8 @@ public class BTreeGraphics {
                     parentNode = null;
 
                 newNodeGraphics = new NodeGraphics(0, 0,
-                        levelsNodes.get(level).get(i), parentNode);
+                        levelsNodes.get(level).get(i), parentNode,
+                        isVertical(), isItemVertical());
                 levelsNodeGraphics.get(level).add(newNodeGraphics);
                 nodeGraphics.add(newNodeGraphics);
             }
@@ -212,8 +241,7 @@ public class BTreeGraphics {
                 if (isVertical())
                     if (nodeGraphicsAtLevel.getWidth() > maxDim)
                         maxDim = nodeGraphicsAtLevel.getWidth();
-                else
-                    if (nodeGraphicsAtLevel.getHeight() > maxDim)
+                    else if (nodeGraphicsAtLevel.getHeight() > maxDim)
                         maxDim = nodeGraphicsAtLevel.getHeight();
 
                 // Sets new level-wise position of the node graphic (depending on vertical/horizontal)
@@ -275,6 +303,7 @@ public class BTreeGraphics {
         for (NodeGraphics nodeGraphic : nodeGraphics)
             nodeGraphic.drawChildConnections(graphics);
     }
+
     /**
      * A class representing the nodes of the B Tree to be drawn.
      */
@@ -334,14 +363,26 @@ public class BTreeGraphics {
         private Rectangle2D[] itemBounds;
 
         /**
+         * whether the nodes are displayed vertically within a level
+         */
+        private boolean isNodeVertical;
+        /**
+         * whether the items are displayed vertically within a node
+         */
+        private boolean isItemVertical;
+
+        /**
          * Constructor
          *
          * @param posX              the x position of the graphic
          * @param posY              the y position of the graphic
          * @param node              the node of the B Tree with relevant data
          * @param parentNodeGraphic the parent node, null if it does not exist
+         * @param isNodeVertical    whether the nodes are displayed vertically within a level
+         * @param isItemVertical    whether the items are displayed vertically within a node
          */
-        NodeGraphics(double posX, double posY, BNode node, NodeGraphics parentNodeGraphic) {
+        NodeGraphics(double posX, double posY, BNode node, NodeGraphics parentNodeGraphic,
+                     boolean isNodeVertical, boolean isItemVertical) {
             this.items = null;
             initialiseItems(node);
 
@@ -350,8 +391,9 @@ public class BTreeGraphics {
             setPosY(posY);
 
             this.dimensions = new double[]{0, 0};
-
             this.parent = parentNodeGraphic;
+            this.isNodeVertical = isNodeVertical;
+            this.isItemVertical = isItemVertical;
         }
 
         /**
@@ -363,7 +405,7 @@ public class BTreeGraphics {
         void updateDimensionsAndBounds(Graphics graphics) {
             graphics.setFont(FONT);
             itemBounds = BTreeDisplay.getStringBounds(items, graphics,
-                    SPACING + ITEM_PADDING * 2, false);
+                    SPACING + ITEM_PADDING * 2, isItemVertical);
 
             // Update dimensions
             dimensions[0] = 0;
@@ -418,7 +460,7 @@ public class BTreeGraphics {
                 graphics.setColor(FONT_COLOR);
                 graphics.drawString(items[i],
                         (int) (itemBounds[i].getX() + getPosX()),
-                        (int) (itemBounds[i].getY() + getPosY() + itemBounds[i].getHeight() * 4/5));
+                        (int) (itemBounds[i].getY() + getPosY() + itemBounds[i].getHeight() * 4 / 5));
                 // Height added as drawString draws using coords as the bottom left corner of the text bounding box
                 // Multiplied by a constant 4/5 is as it looks more center
             }
@@ -436,14 +478,25 @@ public class BTreeGraphics {
             if (parent == null)  // parent does not exist
                 return;
 
-            double lineStartX = getPosX() + getWidth() / 2;
-            double lineStartY = getPosY() - PADDING * 3/4;
-            double lineEndX = parent.getPosX() + parent.getWidth() / 2;
-            double lineEnxY = parent.getPosY() + parent.getHeight() + PADDING * 3/4;
+            double lineStartX;
+            double lineStartY;
+            double lineEndX;
+            double lineEndY;
+            if (isNodeVertical) {
+                lineStartX = getPosX() - PADDING * 3 / 4;
+                lineStartY = getPosY() + getHeight() / 2;
+                lineEndX = parent.getPosX() + parent.getWidth() + PADDING * 3 / 4;
+                lineEndY = parent.getPosY() + parent.getHeight() / 2;
+            } else {
+                lineStartX = getPosX() + getWidth() / 2;
+                lineStartY = getPosY() - PADDING * 3 / 4;
+                lineEndX = parent.getPosX() + parent.getWidth() / 2;
+                lineEndY = parent.getPosY() + parent.getHeight() + PADDING * 3 / 4;
+            }
 
             graphics2D.setStroke(LINE_STROKE);
             graphics2D.setColor(LINE_COLOR);
-            graphics2D.drawLine((int) lineStartX, (int) lineStartY, (int) lineEndX, (int) lineEnxY);
+            graphics2D.drawLine((int) lineStartX, (int) lineStartY, (int) lineEndX, (int) lineEndY);
         }
 
         /**
@@ -510,7 +563,7 @@ public class BTreeGraphics {
             // Find the number of non-null values
             int numNonNull = 0;
             // Since null values are always towards the end of the array, we iterate until we find a null value
-            for (Object item: items) {
+            for (Object item : items) {
                 if (item == null)
                     break;
                 numNonNull += 1;
