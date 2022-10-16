@@ -12,7 +12,7 @@ public class Entry implements Comparable<Entry> {
 
     @Override
     public String toString(){
-        return year + " " + country + "\n" + gov_left1;
+        return year + " " + country + " --- " + gov_left1;
     }
 
     @Override
