@@ -238,11 +238,13 @@ public class BTreeGraphics {
                 NodeGraphics nodeGraphicsAtLevel = levelsNodeGraphics.get(level).get(i);
 
                 // Check for possible new maximum dimension (depending on vertical/horizontal)
-                if (isVertical())
+                if (isVertical()) {
                     if (nodeGraphicsAtLevel.getWidth() > maxDim)
                         maxDim = nodeGraphicsAtLevel.getWidth();
-                    else if (nodeGraphicsAtLevel.getHeight() > maxDim)
+                } else {
+                    if (nodeGraphicsAtLevel.getHeight() > maxDim)
                         maxDim = nodeGraphicsAtLevel.getHeight();
+                }
 
                 // Sets new level-wise position of the node graphic (depending on vertical/horizontal)
                 if (isVertical())
@@ -408,16 +410,42 @@ public class BTreeGraphics {
                     SPACING + ITEM_PADDING * 2, isItemVertical);
 
             // Update dimensions
-            dimensions[0] = 0;
-            dimensions[1] = 0;
+
+            // Get proper index values (depending on horizontal/vertical)
+            int dimIncrementingValueIndex;
+            int dimMaximisingValueIndex;
+            if (isItemVertical) {
+                dimIncrementingValueIndex = 1;
+                dimMaximisingValueIndex = 0;
+            } else {
+                dimIncrementingValueIndex = 0;
+                dimMaximisingValueIndex = 1;
+            }
+            dimensions[dimIncrementingValueIndex] = 0;
+            dimensions[dimMaximisingValueIndex] = 0;
+
+            // iterate through items
             int numItemsCounted = 0;  // Used to add correct padding and spacing values
             for (Rectangle2D bounds : itemBounds) {
-                dimensions[0] += bounds.getWidth();
+                // Increment incrementing dimension
+                double increment;
+                if (isItemVertical)
+                    increment = bounds.getHeight();
+                else
+                    increment = bounds.getWidth();
+                dimensions[dimIncrementingValueIndex] += increment;
                 if (numItemsCounted != 0)
-                    dimensions[0] += ITEM_PADDING * 2 + SPACING;
+                    dimensions[dimIncrementingValueIndex] += ITEM_PADDING * 2 + SPACING;
+
+                // Check for possible new maximising dimension
+                double candidate;
+                if (isItemVertical)
+                    candidate = bounds.getWidth();
+                else
+                    candidate = bounds.getHeight();
                 numItemsCounted += 1;
-                if (dimensions[1] < bounds.getHeight())
-                    dimensions[1] = bounds.getHeight();
+                if (dimensions[dimMaximisingValueIndex] < candidate)
+                    dimensions[dimMaximisingValueIndex] = candidate;
             }
         }
 

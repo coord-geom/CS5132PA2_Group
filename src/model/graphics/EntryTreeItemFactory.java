@@ -29,7 +29,8 @@ public class EntryTreeItemFactory implements TreeItemFactory<Entry> {
     public boolean isValidString(String str) {
         try {
             String[] elements = str.split("^\\s+|\\s*,\\s*|\\s+$");
-            assert elements.length == 3;
+            if (elements.length != 3)
+                return false;
             new Entry(Integer.parseInt(elements[0]), elements[1], Float.parseFloat(elements[2]));
         } catch (NumberFormatException | AssertionError e) {
             return false;

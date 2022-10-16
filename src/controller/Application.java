@@ -113,7 +113,7 @@ public class Application extends JFrame {
                 EntryTreeItemFactory entryTreeItemFactory = new EntryTreeItemFactory();
                 display = new BTreeDisplay(entryTreeItemFactory,
                         entryTreeItemFactory.createFromFileTree(20, null));
-                display.setVertical(true);
+                display.setItemVertical(true);
             }
             // add new display and revalidate the panel to see changes to gui
             rootPanel.add(display, BorderLayout.CENTER);
