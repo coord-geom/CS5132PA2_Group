@@ -1,11 +1,10 @@
-package model;
+package data;
 
-import data.Entry;
+import model.BTree;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class EmailTester {
     public static void main(String[] args) {
@@ -14,7 +13,7 @@ public class EmailTester {
         String splitBy = ",";
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader("src/model/emails.csv"));
+            BufferedReader br = new BufferedReader(new FileReader("src/data/emails.csv"));
             while ((line = br.readLine()) != null)   //returns a Boolean value
             {
                 String[] entry = line.split(splitBy);    // use comma as separator

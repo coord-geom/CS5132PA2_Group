@@ -1,10 +1,7 @@
-package model;
-
-import javafx.util.converter.LocalDateStringConverter;
+package data;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class Email implements Comparable<Email>{
     LocalDate date;
